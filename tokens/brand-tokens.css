@@ -70,11 +70,13 @@
   --space-xl:  64px;
   --space-2xl: 96px;
 
-  /* Layout Slide */
-  --slide-width:      1920px;
-  --slide-height:     1080px;
-  --slide-padding:    96px;
-  --slide-padding-sm: 64px;
+/* Slide layout
+   960×540px = PowerPoint widescreen 13.33"x7.5" a 72dpi
+   1px HTML = 1pt PPTX. NO usar 1920x1080, la tipografia sale gigante en PPT */
+--slide-width:      960px;
+--slide-height:     540px;
+--slide-padding:    48px;
+--slide-padding-sm: 32px;
 
   /* Cards */
   --card-radius:  16px;
