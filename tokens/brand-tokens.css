@@ -1,1 +1,194 @@
-tokens/brand-tokens.css
+/* ============================================
+   enerBit Â· Brand Tokens
+   Fuente de verdad visual â€” no editar valores
+   directamente aquÃ­, hacerlo en Figma primero.
+   VersiÃ³n: 1.0.0 Â· Jun 2026
+   ============================================ */
+
+:root {
+
+  /* ------------------------------------------
+     COLORES Â· Primitivos
+     Estos son los valores base, no se usan
+     directamente en componentes.
+  ------------------------------------------ */
+
+  /* Colores principales */
+  --eb-purple:  #533583;   /* color principal â€” encabezados, CTAs, fondos dominantes */
+  --eb-orange:  #FF7C02;   /* acento â€” highlights, elementos de energÃ­a */
+  --eb-gray:    #B2B2B2;   /* fondos neutros, bordes, texto secundario */
+  --eb-white:   #FFFFFF;   /* fondos, texto sobre superficies oscuras */
+  --eb-yellow:  #FFF65E;   /* secundario â€” acentos vibrantes, destacados positivos */
+  --eb-green:   #00BE91;   /* secundario â€” Ã©xito, sostenibilidad */
+
+  /* Escala de pÃºrpura â€” de mÃ¡s claro a mÃ¡s oscuro */
+  --eb-purple-25:  #FCFAFF;   /* fondo de pÃ¡gina, secciÃ³n muy sutil */
+  --eb-50:         #F9F5FF;   /* fondo de tarjetas, filas alternas */
+  --eb-purple-100: #F4EBFF;   /* fondo de badges, campos de formulario */
+  --eb-purple-200: #E9D7FE;   /* bordes activos, fondo de tags/chips */
+  --eb-purple-300: #D6BBFB;   /* bordes de foco, indicadores de progreso */
+  --eb-purple-500: #A48AFB;   /* hover activo, Ã­conos de Ã©nfasis medio */
+  --eb-purple-700: #6941C6;   /* texto de enlaces, botones secundarios, Ã­conos activos */
+  --eb-purple-900: #533583;   /* uso pleno â€” igual a --eb-purple */
+
+
+  /* ------------------------------------------
+     COLORES Â· SemÃ¡nticos
+     Estos son los que usan los componentes.
+     Si la marca cambia, solo editar aquÃ­.
+  ------------------------------------------ */
+
+  --color-brand-primary:      var(--eb-purple);
+  --color-brand-accent:       var(--eb-orange);
+  --color-brand-success:      var(--eb-green);
+  --color-brand-highlight:    var(--eb-yellow);
+
+  --color-bg-slide-dark:      var(--eb-purple);        /* slides fondo morado */
+  --color-bg-slide-light:     var(--eb-white);         /* slides fondo blanco */
+  --color-bg-card:            rgba(83,53,131,0.08);    /* cards claras */
+  --color-bg-card-filled:     var(--eb-purple);        /* cards rellenas moradas */
+  --color-bg-card-accent:     var(--eb-orange);        /* cards rellenas naranja */
+
+  --color-text-title-dark:    var(--eb-white);         /* tÃ­tulos sobre fondo morado */
+  --color-text-title-light:   var(--eb-purple);        /* tÃ­tulos sobre fondo blanco */
+  --color-text-title-accent:  var(--eb-orange);        /* tÃ­tulos destacados naranja */
+  --color-text-body-dark:     var(--eb-white);         /* cuerpo sobre fondo morado */
+  --color-text-body-light:    var(--eb-gray);          /* cuerpo sobre fondo blanco */
+  --color-text-on-filled:     var(--eb-white);         /* texto sobre cards rellenas */
+
+  --color-border-card:        rgba(178,178,178,0.50);  /* borde de cards claras */
+  --color-border-card-filled: rgba(83,53,131,0.60);    /* borde de cards moradas */
+
+
+  /* ------------------------------------------
+     TIPOGRAFIA
+     Fuente principal: Inter
+     Carga via Google Fonts â€” no requiere archivo local
+
+     Incluir en cada HTML:
+     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+           rel="stylesheet" crossorigin="anonymous">
+
+     ICONOS: Material Symbols Rounded / Weight 400
+     Incluir en cada HTML:
+     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0"
+           rel="stylesheet">
+
+     Uso: <span class="material-symbols-rounded">bolt</span>
+  ------------------------------------------ */
+
+  --font-family: 'Inter', sans-serif;
+
+  --font-size-display:  80px;    /* nÃºmero grande hero: 22 min, 2x, 18M */
+  --font-size-h1:       56px;    /* tÃ­tulo cover slide */
+  --font-size-h2:       40px;    /* tÃ­tulo slides contenido */
+  --font-size-h3:       24px;    /* subtÃ­tulo / label de secciÃ³n */
+  --font-size-h4:       18px;    /* tÃ­tulo de card */
+  --font-size-body:     16px;    /* cuerpo de texto */
+  --font-size-caption:  13px;    /* textos pequeÃ±os, etiquetas */
+
+  --font-weight-bold:   700;
+  --font-weight-semi:   600;
+  --font-weight-regular: 400;
+
+  --line-height-tight:  1.15;
+  --line-height-normal: 1.5;
+
+
+  /* ------------------------------------------
+     ESPACIADO
+     Basado en mÃºltiplos de 8px
+  ------------------------------------------ */
+
+  --space-xs:   8px;
+  --space-sm:  16px;
+  --space-md:  24px;
+  --space-lg:  40px;
+  --space-xl:  64px;
+  --space-2xl: 96px;
+
+
+  /* ------------------------------------------
+     LAYOUT Â· Slide
+     DimensiÃ³n base recomendada por dom-to-pptx
+  ------------------------------------------ */
+
+  --slide-width:  1920px;
+  --slide-height: 1080px;
+  --slide-padding: 96px;        /* padding interno de slides */
+  --slide-padding-sm: 64px;     /* padding compacto */
+
+
+  /* ------------------------------------------
+     COMPONENTES Â· Cards
+  ------------------------------------------ */
+
+  --card-radius:   16px;
+  --card-padding:  32px;
+  --card-border:   1.5px solid var(--color-border-card);
+
+
+  /* ------------------------------------------
+     COMPONENTES Â· Accent bar
+     La barra naranja vertical de las listas
+  ------------------------------------------ */
+
+  --accent-bar-width:  4px;
+  --accent-bar-color:  var(--eb-orange-500);
+  --accent-bar-radius: 2px;
+
+}
+
+
+/* ============================================
+   REGLAS DE USO DE COLOR
+
+   TEXTO NARANJA (#FF7C02):
+   - Usar sobre: blanco, gris claro, fondo muy sutil
+   - NUNCA sobre: purpura, verde, amarillo
+
+   TEXTO BLANCO (#FFFFFF):
+   - Usar sobre: purpura, verde oscuro
+   - NUNCA sobre: blanco, amarillo, gris claro
+
+   AMARILLO (#FFF65E):
+   - Usar como acento puntual (highlights, badges)
+   - NUNCA como color de texto corrido
+   - NUNCA como fondo dominante de slide
+
+   VERDE (#00BE91):
+   - Usar para estados de exito y sostenibilidad
+   - Texto sobre verde: siempre blanco
+
+   PURPURA sobre PURPURA:
+   - Usar la escala de opacidad para crear jerarquia
+   - Nunca usar dos purpuras de intensidad similar juntos
+============================================ */
+
+/* ============================================
+   NOTA PARA EL EQUIPO
+
+   CÃ³mo usar estos tokens:
+
+   BIEN:   color: var(--color-text-title-light);
+   MAL:    color: #4B2580;
+
+   Si enerBit actualiza el morado principal,
+   solo cambia --eb-purple-700 arriba y
+   todo el sistema se actualiza solo.
+
+   Archivo de assets que deben existir en /fonts/:
+   - Inter-Regular.woff2
+   - Inter-SemiBold.woff2
+   - Inter-Bold.woff2
+
+   CÃ³mo cargar Inter desde Google Fonts en HTML:
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+         rel="stylesheet" crossorigin="anonymous">
+
+   Logo SVG en /logos/:
+   - logo-white.svg        (para slides oscuras)
+   - logo-color.svg        (para slides claras)
+   - isotipo.svg           (solo sÃ­mbolo)
+============================================ */
