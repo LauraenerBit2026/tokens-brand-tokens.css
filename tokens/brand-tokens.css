@@ -1,40 +1,99 @@
 /* ============================================
-   enerBit Â· Brand Tokens
-   Fuente de verdad visual â€” no editar valores
-   directamente aquÃ­, hacerlo en Figma primero.
-   VersiÃ³n: 1.0.0 Â· Jun 2026
+   enerBit Brand Tokens
+   Fuente de verdad visual. No editar valores
+   directamente aqui, hacerlo en Figma primero.
+   Version: 1.0.0 Jun 2026
    ============================================ */
 
 :root {
 
-  /* ------------------------------------------
-     COLORES Â· Primitivos
-     Estos son los valores base, no se usan
-     directamente en componentes.
-  ------------------------------------------ */
-
   /* Colores principales */
-  --eb-purple:  #533583;   /* color principal â€” encabezados, CTAs, fondos dominantes */
-  --eb-orange:  #FF7C02;   /* acento â€” highlights, elementos de energÃ­a */
-  --eb-gray:    #B2B2B2;   /* fondos neutros, bordes, texto secundario */
-  --eb-white:   #FFFFFF;   /* fondos, texto sobre superficies oscuras */
-  --eb-yellow:  #FFF65E;   /* secundario â€” acentos vibrantes, destacados positivos */
-  --eb-green:   #00BE91;   /* secundario â€” Ã©xito, sostenibilidad */
+  --eb-purple:  #533583;
+  --eb-orange:  #FF7C02;
+  --eb-gray:    #B2B2B2;
+  --eb-white:   #FFFFFF;
+  --eb-yellow:  #FFF65E;
+  --eb-green:   #00BE91;
 
-  /* Escala de pÃºrpura â€” de mÃ¡s claro a mÃ¡s oscuro */
-  --eb-purple-25:  #FCFAFF;   /* fondo de pÃ¡gina, secciÃ³n muy sutil */
-  --eb-50:         #F9F5FF;   /* fondo de tarjetas, filas alternas */
-  --eb-purple-100: #F4EBFF;   /* fondo de badges, campos de formulario */
-  --eb-purple-200: #E9D7FE;   /* bordes activos, fondo de tags/chips */
-  --eb-purple-300: #D6BBFB;   /* bordes de foco, indicadores de progreso */
-  --eb-purple-500: #A48AFB;   /* hover activo, Ã­conos de Ã©nfasis medio */
-  --eb-purple-700: #6941C6;   /* texto de enlaces, botones secundarios, Ã­conos activos */
-  --eb-purple-900: #533583;   /* uso pleno â€” igual a --eb-purple */
+  /* Escala de purpura */
+  --eb-purple-25:  #FCFAFF;
+  --eb-purple-50:  #F9F5FF;
+  --eb-purple-100: #F4EBFF;
+  --eb-purple-200: #E9D7FE;
+  --eb-purple-300: #D6BBFB;
+  --eb-purple-500: #A48AFB;
+  --eb-purple-700: #6941C6;
+  --eb-purple-900: #533583;
 
+  /* Semanticos */
+  --color-brand-primary:      var(--eb-purple);
+  --color-brand-accent:       var(--eb-orange);
+  --color-brand-success:      var(--eb-green);
+  --color-brand-highlight:    var(--eb-yellow);
 
-  /* ------------------------------------------
-     COLORES Â· SemÃ¡nticos
-     Estos son los que usan los componentes.
+  --color-bg-slide-dark:      var(--eb-purple);
+  --color-bg-slide-light:     var(--eb-white);
+  --color-bg-card:            rgba(83,53,131,0.08);
+  --color-bg-card-filled:     var(--eb-purple);
+  --color-bg-card-accent:     var(--eb-orange);
+
+  --color-text-title-dark:    var(--eb-white);
+  --color-text-title-light:   var(--eb-purple);
+  --color-text-title-accent:  var(--eb-orange);
+  --color-text-body-dark:     var(--eb-white);
+  --color-text-body-light:    var(--eb-gray);
+  --color-text-on-filled:     var(--eb-white);
+
+  --color-border-card:        rgba(178,178,178,0.50);
+  --color-border-card-filled: rgba(83,53,131,0.60);
+
+  /* Tipografia */
+  --font-family: 'Inter', sans-serif;
+  --font-size-display:  80px;
+  --font-size-h1:       56px;
+  --font-size-h2:       40px;
+  --font-size-h3:       24px;
+  --font-size-h4:       18px;
+  --font-size-body:     16px;
+  --font-size-caption:  13px;
+  --font-weight-bold:   700;
+  --font-weight-semi:   600;
+  --font-weight-regular: 400;
+  --line-height-tight:  1.15;
+  --line-height-normal: 1.5;
+
+  /* Espaciado */
+  --space-xs:   8px;
+  --space-sm:  16px;
+  --space-md:  24px;
+  --space-lg:  40px;
+  --space-xl:  64px;
+  --space-2xl: 96px;
+
+  /* Layout Slide */
+  --slide-width:      1920px;
+  --slide-height:     1080px;
+  --slide-padding:    96px;
+  --slide-padding-sm: 64px;
+
+  /* Cards */
+  --card-radius:  16px;
+  --card-padding: 32px;
+  --card-border:  1.5px solid var(--color-border-card);
+
+  /* Accent bar */
+  --accent-bar-width:  4px;
+  --accent-bar-color:  var(--eb-orange);
+  --accent-bar-radius: 2px;
+
+}
+
+/* REGLAS DE COLOR
+   NARANJA: solo sobre blanco o gris claro. NUNCA sobre purpura.
+   BLANCO: sobre purpura o verde. NUNCA sobre blanco o amarillo.
+   AMARILLO: solo como acento. NUNCA como texto o fondo dominante.
+   VERDE: exito y sostenibilidad. Texto encima siempre blanco.
+*/     Estos son los que usan los componentes.
      Si la marca cambia, solo editar aquÃ­.
   ------------------------------------------ */
 
