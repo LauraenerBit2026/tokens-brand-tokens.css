@@ -162,6 +162,24 @@
     }
     .add-deck-btn:hover { background: #e4d9f7; }
 
+    /* ── Image picker ── */
+    .img-picker {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
+      max-height: 210px; overflow-y: auto;
+      border: 1.5px solid #e0e0e0; border-radius: 8px;
+      padding: 5px; background: #fff;
+    }
+    .img-thumb {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      cursor: pointer; border-radius: 6px; padding: 3px;
+      border: 2px solid transparent; transition: border-color .15s, background .15s;
+    }
+    .img-thumb:hover { border-color: #d5c8f0; background: #f5f0fb; }
+    .img-thumb.selected { border-color: #533583; background: #f0eaf8; }
+    .img-thumb img { width: 100%; height: 44px; object-fit: contain; border-radius: 3px; }
+    .img-thumb span { font-size: 8px; color: #999; text-align: center; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
+    .img-loading { font-size: 10px; color: #aaa; text-align: center; padding: 12px 0; }
+
     /* ── Slide base ── */
     #slide-container {
       width: 960px; height: 540px;
@@ -271,7 +289,7 @@ const TEMPLATES = [
       {section:'Subtítulo'},
       {id:'subtitle',label:'Descripción',               type:'textarea', val:'Subtítulo o descripción breve de lo que trata esta presentación.'},
       {section:'Imagen'},
-      {id:'biter',   label:'Biter',                    type:'biter',    val:'biter_mujer_thumbsup.png'},
+      {id:'biter',   label:'Biter',                    type:'image-pick',    val:'biter_mujer_thumbsup.png'},
     ],
     css:`
       #slide-container{background:#533583}
@@ -396,7 +414,7 @@ const TEMPLATES = [
       {id:'pqr',     label:'Texto PQR',          type:'textarea', val:'Para generar una PQR ingresa a\nwww.enerbit.co/pqr/'},
       {id:'tagline', label:'Tagline',             type:'textarea', val:'Estamos aquí\npara atenderte'},
       {section:'Imagen'},
-      {id:'biter',   label:'Biter',              type:'biter',    val:'biter_mujer_celular.png'},
+      {id:'biter',   label:'Biter',              type:'image-pick',    val:'biter_mujer_celular.png'},
     ],
     css:`
       #slide-container{background:#fff}
@@ -610,7 +628,7 @@ const TEMPLATES = [
       {id:'title',label:'Título (naranja)', type:'text',     val:'Título'},
       {id:'body', label:'Texto',            type:'textarea', val:'Nullam dignissim ut nibh eu ornare. Curabitur libero enim, ultricies vitae pellentesque vitae.'},
       {section:'Imagen'},
-      {id:'biter',label:'Biter',            type:'biter',    val:'biter_hombre_thumbsup.png'},
+      {id:'biter',label:'Biter',            type:'image-pick',    val:'biter_hombre_thumbsup.png'},
     ],
     css:`
       #slide-container{background:#fff}
@@ -802,12 +820,24 @@ const TEMPLATES = [
 
 ]; // end TEMPLATES
 
-// ── Biters ────────────────────────────────────────────────────────────────────
-const BITERS = [
-  {val:'biter_mujer_thumbsup.png',  label:'Mujer thumbs up'},
-  {val:'biter_mujer_celular.png',   label:'Mujer celular'},
-  {val:'biter_hombre_thumbsup.png', label:'Hombre thumbs up'},
+// ── Repo images (loaded from GitHub API) ──────────────────────────────────────
+let repoImages = [
+  {name:'biter_mujer_thumbsup.png'},
+  {name:'biter_mujer_celular.png'},
+  {name:'biter_hombre_thumbsup.png'},
+  {name:'MOCKUP-CELULAR.png'},
+  {name:'ipad-b2b.png'},
 ];
+
+async function loadRepoImages() {
+  try {
+    const resp = await fetch('https://api.github.com/repos/LauraenerBit2026/tokens-brand-tokens.css/contents/images');
+    if (!resp.ok) return;
+    const files = await resp.json();
+    const imgs = files.filter(f => f.type === 'file' && /\.(png|jpg|jpeg|gif|webp)$/i.test(f.name));
+    if (imgs.length > 0) repoImages = imgs.map(f => ({ name: f.name }));
+  } catch(e) { /* use fallback */ }
+}
 
 // ── App state ─────────────────────────────────────────────────────────────────
 let currentTpl    = null;
@@ -852,8 +882,15 @@ function buildPanel(tpl) {
       html += `<div class="field"><label>${f.label}</label><input type="text" data-fid="${f.id}" value="${esc(val)}"></div>`;
     } else if (f.type === 'textarea') {
       html += `<div class="field"><label>${f.label}</label><textarea data-fid="${f.id}" rows="3">${esc(val)}</textarea></div>`;
-    } else if (f.type === 'biter') {
-      html += `<div class="field"><label>${f.label}</label><select data-fid="${f.id}">${BITERS.map(b=>`<option value="${b.val}"${val===b.val?' selected':''}>${b.label}</option>`).join('')}</select></div>`;
+    } else if (f.type === 'image-pick') {
+      const thumbs = repoImages.length
+        ? repoImages.map(img => `
+            <div class="img-thumb${val===img.name?' selected':''}" data-fid="${f.id}" data-val="${img.name}">
+              <img src="${IMGS}${img.name}" alt="${img.name}" crossorigin="anonymous">
+              <span>${img.name.replace(/\.[^.]+$/,'').replace(/_/g,' ')}</span>
+            </div>`).join('')
+        : `<p class="img-loading">Cargando imágenes…</p>`;
+      html += `<div class="field"><label>${f.label}</label><div class="img-picker">${thumbs}</div></div>`;
     }
   }
   if (inSection) html += '</div>';
@@ -1046,6 +1083,19 @@ document.getElementById('panel').addEventListener('input', e => {
   updateField(fid, e.target.value);
 });
 
+document.getElementById('panel').addEventListener('click', e => {
+  const thumb = e.target.closest('.img-thumb');
+  if (!thumb) return;
+  const fid = thumb.dataset.fid;
+  const val = thumb.dataset.val;
+  // Update selection visuals
+  thumb.closest('.img-picker').querySelectorAll('.img-thumb').forEach(t => t.classList.remove('selected'));
+  thumb.classList.add('selected');
+  // Update state and preview
+  currentValues[fid] = val;
+  updateField(fid, val);
+});
+
 document.getElementById('export-slide-btn').addEventListener('click', async () => {
   if (!currentTpl) return;
   const btn = document.getElementById('export-slide-btn');
@@ -1066,6 +1116,7 @@ document.getElementById('deck-clear-btn').addEventListener('click', () => { deck
 buildNav();
 scaleSlide();
 window.addEventListener('resize', scaleSlide);
+loadRepoImages(); // fetch image list from GitHub (non-blocking)
 </script>
 </body>
 </html>
