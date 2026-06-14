@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>enerBit · Brand Agent</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/dom-to-pptx@latest/dist/dom-to-pptx.bundle.js"></script>
+
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #F2F2F2; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+    /* ── Topbar ── */
+    .topbar {
+      background: #533583; height: 52px;
+      display: flex; align-items: center; padding: 0 20px; gap: 10px; flex-shrink: 0;
+    }
+    .topbar-brand { font-size: 15px; font-weight: 700; color: #fff; white-space: nowrap; }
+    .topbar-tag   { font-size: 11px; color: rgba(255,255,255,.45); white-space: nowrap; }
+    .topbar-sep   { flex: 1; }
+    .topbar-tpl   { font-size: 12px; font-weight: 600; color: rgba(255,255,255,.75); white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+    .topbar-divider { width: 1px; height: 24px; background: rgba(255,255,255,.2); }
+
+    /* Topbar buttons */
+    .tb-btn {
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+      border: none; border-radius: 6px; padding: 7px 14px; cursor: pointer;
+      transition: opacity .2s; white-space: nowrap;
+    }
+    .tb-btn:disabled { opacity: .35; cursor: default; }
+    .tb-btn:not(:disabled):hover { opacity: .82; }
+    .tb-btn-ghost { background: rgba(255,255,255,.15); color: #fff; }
+    .tb-btn-orange { background: #FF7C02; color: #fff; }
+    .tb-btn-green  { background: #00BE91; color: #fff; }
+
+    /* Deck badge */
+    .deck-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,.18); color: #fff;
+      font-size: 11px; font-weight: 700; border-radius: 6px; padding: 4px 10px;
+      white-space: nowrap;
+    }
+    .deck-badge .count {
+      background: #FF7C02; color: #fff; font-size: 10px; font-weight: 800;
+      border-radius: 4px; padding: 1px 6px; min-width: 18px; text-align: center;
+    }
+
+    /* ── App layout ── */
+    .app { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── Nav ── */
+    .nav {
+      width: 210px; flex-shrink: 0;
+      background: #fff; border-right: 1px solid #e8e8e8;
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .nav-templates { flex: 1; overflow-y: auto; padding: 10px 0; }
+    .nav-group-label {
+      font-size: 9px; font-weight: 700; color: #bbb;
+      text-transform: uppercase; letter-spacing: .1em;
+      padding: 10px 14px 3px;
+    }
+    .nav-btn {
+      display: block; width: 100%; text-align: left;
+      padding: 7px 14px; font-family: 'Inter', sans-serif;
+      font-size: 11.5px; font-weight: 500; color: #444;
+      background: none; border: none; cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: background .12s, color .12s;
+    }
+    .nav-btn:hover { background: #f5f0fb; color: #533583; }
+    .nav-btn.active { background: #f0eaf8; color: #533583; font-weight: 700; border-left-color: #533583; }
+    .nav-btn .nav-desc { display: block; font-size: 10px; font-weight: 400; color: #bbb; margin-top: 1px; }
+    .nav-btn.active .nav-desc { color: rgba(83,53,131,.5); }
+
+    /* ── Deck panel (bottom of nav) ── */
+    .deck-panel {
+      border-top: 1.5px solid #ece6f5; background: #faf8fe;
+      flex-shrink: 0; max-height: 240px; display: flex; flex-direction: column;
+    }
+    .deck-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 12px 6px; flex-shrink: 0;
+    }
+    .deck-header-label { font-size: 9px; font-weight: 700; color: #533583; text-transform: uppercase; letter-spacing: .1em; }
+    .deck-clear-btn {
+      font-family: 'Inter', sans-serif; font-size: 10px; color: #aaa;
+      background: none; border: none; cursor: pointer; padding: 2px 4px; border-radius: 4px;
+    }
+    .deck-clear-btn:hover { color: #e53935; background: #fce4e4; }
+    .deck-list { overflow-y: auto; flex: 1; padding: 0 8px 4px; }
+    .deck-item {
+      display: flex; align-items: center; gap: 6px;
+      background: #fff; border: 1px solid #e8e4f2; border-radius: 6px;
+      padding: 5px 8px; margin-bottom: 4px; cursor: grab;
+    }
+    .deck-item:active { cursor: grabbing; }
+    .deck-item-num {
+      font-size: 10px; font-weight: 700; color: rgba(83,53,131,.5);
+      width: 14px; text-align: center; flex-shrink: 0;
+    }
+    .deck-item-name { font-size: 11px; font-weight: 500; color: #444; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .deck-item-remove {
+      font-size: 14px; color: #ccc; background: none; border: none; cursor: pointer;
+      padding: 0 2px; line-height: 1; flex-shrink: 0;
+    }
+    .deck-item-remove:hover { color: #e53935; }
+    .deck-download {
+      flex-shrink: 0; padding: 8px;
+    }
+    .deck-download-btn {
+      display: block; width: 100%;
+      font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700;
+      background: #533583; color: #fff; border: none; border-radius: 7px;
+      padding: 9px 0; cursor: pointer; transition: opacity .2s; text-align: center;
+    }
+    .deck-download-btn:disabled { opacity: .35; cursor: default; }
+    .deck-download-btn:not(:disabled):hover { opacity: .85; }
+    .deck-empty { font-size: 10px; color: #bbb; text-align: center; padding: 10px 12px; }
+
+    /* ── Form panel ── */
+    .panel {
+      width: 258px; flex-shrink: 0;
+      background: #fafafa; border-right: 1px solid #e8e8e8;
+      overflow-y: auto; padding: 14px 12px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .panel-section { display: flex; flex-direction: column; gap: 8px; }
+    .panel-empty { color: #bbb; font-size: 12px; text-align: center; margin-top: 40px; }
+    .section-label {
+      font-size: 9px; font-weight: 700; color: #533583;
+      text-transform: uppercase; letter-spacing: .1em;
+      padding-bottom: 5px; border-bottom: 1.5px solid #ece6f5;
+    }
+    .field { display: flex; flex-direction: column; gap: 3px; }
+    .field label { font-size: 10px; font-weight: 600; color: #666; }
+    .field input, .field textarea, .field select {
+      font-family: 'Inter', sans-serif; font-size: 11.5px; color: #333;
+      border: 1.5px solid #e0e0e0; border-radius: 6px; padding: 6px 8px;
+      outline: none; transition: border-color .2s; resize: none; background: #fff;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: #533583; }
+
+    /* ── Preview ── */
+    .preview-area {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      background: #DCDCDC; overflow: hidden; position: relative;
+    }
+    .preview-empty { color: #aaa; font-size: 13px; text-align: center; }
+    #slide-scaler { transform-origin: center center; }
+
+    /* ── Add to deck button (inside panel) ── */
+    .add-deck-btn {
+      display: block; width: 100%; margin-top: 4px;
+      font-family: 'Inter', sans-serif; font-size: 11.5px; font-weight: 700;
+      background: #f0eaf8; color: #533583; border: 1.5px solid #d5c8f0;
+      border-radius: 7px; padding: 9px 0; cursor: pointer;
+      transition: background .15s; text-align: center;
+    }
+    .add-deck-btn:hover { background: #e4d9f7; }
+
+    /* ── Slide base ── */
+    #slide-container {
+      width: 960px; height: 540px;
+      position: relative; overflow: hidden;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Deck slide render area (off-screen) ── */
+    #deck-render-area {
+      position: fixed; left: -9999px; top: 0; pointer-events: none;
+    }
+    .deck-slide-host {
+      width: 960px; height: 540px;
+      position: relative; overflow: hidden;
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+
+  <style id="tpl-css"></style>
+</head>
+<body>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <span class="topbar-brand">enerBit</span>
+    <span class="topbar-tag">Brand Agent</span>
+    <div class="topbar-sep"></div>
+    <span class="topbar-tpl" id="topbar-tpl-name">Selecciona un template →</span>
+    <div class="topbar-divider"></div>
+    <button class="tb-btn tb-btn-ghost" id="export-slide-btn" disabled>⬇ Este slide</button>
+    <div class="deck-badge" id="deck-badge" style="display:none">
+      🗂 Deck <span class="count" id="deck-count">0</span>
+    </div>
+    <button class="tb-btn tb-btn-green" id="export-deck-btn" disabled>⬇ Descargar deck</button>
+  </div>
+
+  <div class="app">
+    <!-- Nav -->
+    <nav class="nav">
+      <div class="nav-templates" id="nav"></div>
+      <!-- Deck panel -->
+      <div class="deck-panel">
+        <div class="deck-header">
+          <span class="deck-header-label">🗂 Mi deck</span>
+          <button class="deck-clear-btn" id="deck-clear-btn">Limpiar todo</button>
+        </div>
+        <div class="deck-list" id="deck-list">
+          <p class="deck-empty" id="deck-empty-msg">Agrega slides para armar tu presentación</p>
+        </div>
+        <div class="deck-download">
+          <button class="deck-download-btn" id="deck-download-btn" disabled>⬇ Descargar deck PPTX</button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Form panel -->
+    <div class="panel" id="panel">
+      <p class="panel-empty">← Selecciona<br>un template</p>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-area" id="preview-area">
+      <div class="preview-empty" id="preview-empty">Selecciona un template para comenzar</div>
+      <div id="slide-scaler" style="display:none">
+        <div id="slide-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Off-screen render area for deck export -->
+  <div id="deck-render-area"></div>
+  <style id="deck-render-css"></style>
+
+<script>
+// ── Constants ───────────────────────────────────────────────────────
+const CDN   = 'https://cdn.jsdelivr.net/gh/LauraenerBit2026/tokens-brand-tokens.css@main';
+const IMGS  = CDN + '/images/';
+const LOGOS = CDN + '/logos/';
+const LOGO_COLOR = `${LOGOS}logo-color.svg`;
+const LOGO_WHITE = `${LOGOS}logo-white.svg`;
+
+const esc = (s) => String(s||'')
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ── CSS scoping for multi-slide export ─────────────────────────────
+// Replaces #slide-container and .s-* with scoped selectors for a given id
+function scopeCSS(css, id) {
+  return css
+    .replace(/#slide-container/g, `#${id}`)
+    .replace(/(^|[{,;\n\s])\.s-/gm, (m, pre) => `${pre}#${id} .s-`);
+}
+
+// ── Templates ──────────────────────────────────────────────────────
+const TEMPLATES = [
+
+  // 1. PORTADA
+  {
+    id:'portada', name:'Portada', desc:'Slide de apertura', group:'Apertura y cierre',
+    fileName:'portada-enerbit.pptx',
+    fields:[
+      {section:'Encabezado'},
+      {id:'label',   label:'Etiqueta (texto pequeño)', type:'text',     val:'Presentación'},
+      {section:'Título'},
+      {id:'title1',  label:'Línea 1 (blanco)',          type:'text',     val:'Título de la'},
+      {id:'title2',  label:'Línea 2 (naranja)',         type:'text',     val:'presentación'},
+      {section:'Subtítulo'},
+      {id:'subtitle',label:'Descripción',               type:'textarea', val:'Subtítulo o descripción breve de lo que trata esta presentación.'},
+      {section:'Imagen'},
+      {id:'biter',   label:'Biter',                    type:'biter',    val:'biter_mujer_thumbsup.png'},
+    ],
+    css:`
+      #slide-container{background:#533583}
+      #slide-container::before{content:'';position:absolute;top:-100px;right:-100px;width:350px;height:350px;background:radial-gradient(circle,rgba(105,65,198,.5) 0%,transparent 70%);pointer-events:none}
+      .s-logo{position:absolute;top:28px;right:36px;width:110px}
+      .s-content{position:absolute;left:48px;bottom:70px;max-width:430px}
+      .s-label{font-size:12px;font-weight:600;color:rgba(255,255,255,.55);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+      .s-title{font-size:44px;font-weight:700;color:#fff;line-height:1.08;margin-bottom:16px}
+      .s-title .orng{color:#FF7C02}
+      .s-subtitle{font-size:14px;font-weight:400;color:rgba(255,255,255,.7);line-height:1.5;max-width:320px}
+      .s-biter{position:absolute;right:0;bottom:0;height:92%;object-fit:contain;object-position:bottom right}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_WHITE}" crossorigin="anonymous">
+      <div class="s-content">
+        <p class="s-label" id="eb-label">${esc(d.label)}</p>
+        <h1 class="s-title"><span id="eb-title1">${esc(d.title1)}</span><br><span class="orng" id="eb-title2">${esc(d.title2)}</span></h1>
+        <p class="s-subtitle" id="eb-subtitle">${esc(d.subtitle)}</p>
+      </div>
+      <img id="eb-biter" class="s-biter" src="${IMGS}${d.biter}" crossorigin="anonymous">
+    `,
+  },
+
+  // 2. CONTENIDO
+  {
+    id:'contenido', name:'Contenido 2 col', desc:'Dos tarjetas de contenido', group:'Contenido',
+    fileName:'contenido-enerbit.pptx',
+    fields:[
+      {section:'Encabezado'},
+      {id:'label', label:'Etiqueta', type:'text', val:'Sección'},
+      {id:'title', label:'Título del slide', type:'text', val:'Título del slide de contenido'},
+      {section:'Columna 1'},
+      {id:'c1title',label:'Título',      type:'text',     val:'Primer punto clave'},
+      {id:'c1body', label:'Descripción', type:'textarea', val:'Descripción del primer punto. Aquí va el texto explicativo con el detalle que necesita la audiencia.'},
+      {section:'Columna 2'},
+      {id:'c2title',label:'Título',      type:'text',     val:'Segundo punto clave'},
+      {id:'c2body', label:'Descripción', type:'textarea', val:'Descripción del segundo punto. Mantén los textos cortos y directos.'},
+    ],
+    css:`
+      #slide-container{background:#fff}
+      .s-logo{position:absolute;top:28px;right:36px;width:90px}
+      .s-header{display:flex;align-items:flex-start;gap:16px;padding:48px 48px 0}
+      .s-accent{width:4px;height:52px;background:#FF7C02;border-radius:2px;flex-shrink:0;margin-top:4px}
+      .s-header-text{flex:1}
+      .s-label{font-size:10px;font-weight:600;color:#B2B2B2;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+      .s-title{font-size:26px;font-weight:700;color:#533583;line-height:1.15}
+      .s-cols{display:flex;gap:24px;padding:28px 48px 0}
+      .s-col{flex:1;background:rgba(83,53,131,.05);border-radius:12px;padding:24px;border:1.5px solid rgba(178,178,178,.3);display:flex;flex-direction:column;gap:12px}
+      .s-col svg{width:28px;height:28px;fill:#533583}
+      .s-col-title{font-size:14px;font-weight:700;color:#533583}
+      .s-col-body{font-size:12px;font-weight:400;color:#555;line-height:1.6}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
+      <div class="s-header">
+        <div class="s-accent"></div>
+        <div class="s-header-text">
+          <p class="s-label" id="eb-label">${esc(d.label)}</p>
+          <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+        </div>
+      </div>
+      <div class="s-cols">
+        <div class="s-col">
+          <svg viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+          <p class="s-col-title" id="eb-c1title">${esc(d.c1title)}</p>
+          <p class="s-col-body" id="eb-c1body">${esc(d.c1body)}</p>
+        </div>
+        <div class="s-col">
+          <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+          <p class="s-col-title" id="eb-c2title">${esc(d.c2title)}</p>
+          <p class="s-col-body" id="eb-c2body">${esc(d.c2body)}</p>
+        </div>
+      </div>
+    `,
+  },
+
+  // 3. MÉTRICAS
+  {
+    id:'metricas', name:'Métricas 2×3', desc:'Grid de 6 métricas', group:'Contenido',
+    fileName:'metricas-enerbit.pptx',
+    fields:[
+      {section:'Encabezado'},
+      {id:'title',   label:'Título',    type:'text',     val:'Título'},
+      {id:'subtitle',label:'Subtítulo', type:'textarea', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+      ...[1,2,3,4,5,6].flatMap(i=>[
+        {section:`Métrica ${i}`},
+        {id:`m${i}num`, label:'Número',      type:'text', val:i<=2?'+00.000':i===3?'0X':i<=5?'0%':'x países'},
+        {id:`m${i}desc`,label:'Descripción', type:'text', val:'Lorem ipsum dolor sit amet consectetur.'},
+      ]),
+    ],
+    css:`
+      #slide-container{background:#fff;padding:48px;display:flex;flex-direction:column;gap:20px}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
+      .s-header{display:flex;flex-direction:column;gap:4px}
+      .s-title{font-size:24px;font-weight:700;color:#533583}
+      .s-subtitle{font-size:13px;color:#666}
+      .s-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:12px;flex:1}
+      .s-card{background:#F4EBFF;border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:6px}
+      .s-num{font-size:36px;font-weight:700;color:#533583;line-height:1;letter-spacing:-.01em}
+      .s-desc{font-size:11px;color:#666;line-height:1.4}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
+      <div class="s-header">
+        <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+        <p class="s-subtitle" id="eb-subtitle">${esc(d.subtitle)}</p>
+      </div>
+      <div class="s-grid">
+        ${[1,2,3,4,5,6].map(i=>`<div class="s-card"><p class="s-num" id="eb-m${i}num">${esc(d['m'+i+'num'])}</p><p class="s-desc" id="eb-m${i}desc">${esc(d['m'+i+'desc'])}</p></div>`).join('')}
+      </div>
+    `,
+  },
+
+  // 4. CIERRE
+  {
+    id:'cierre', name:'Cierre / Contacto', desc:'Slide de cierre con biter', group:'Apertura y cierre',
+    fileName:'cierre-enerbit.pptx',
+    fields:[
+      {section:'Textos'},
+      {id:'title',   label:'Título principal',   type:'textarea', val:'¡Ponerte en contacto con\nnosotros es muy fácil!'},
+      {id:'phone',   label:'Número de WhatsApp', type:'text',     val:'310 211 8496'},
+      {id:'pqr',     label:'Texto PQR',          type:'textarea', val:'Para generar una PQR ingresa a\nwww.enerbit.co/pqr/'},
+      {id:'tagline', label:'Tagline',             type:'textarea', val:'Estamos aquí\npara atenderte'},
+      {section:'Imagen'},
+      {id:'biter',   label:'Biter',              type:'biter',    val:'biter_mujer_celular.png'},
+    ],
+    css:`
+      #slide-container{background:#fff}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
+      .s-content{position:absolute;left:0;right:0;top:0;bottom:0;width:420px;margin:auto 0;padding-left:80px;display:flex;flex-direction:column;justify-content:center;gap:24px}
+      .s-title{font-size:22px;font-weight:700;color:#533583;line-height:1.3;white-space:pre-line}
+      .s-wa-row{display:flex;align-items:center;gap:12px}
+      .s-wa-icon svg{width:36px;height:36px}
+      .s-phone{font-size:28px;font-weight:700;color:#533583}
+      .s-pqr{font-size:15px;color:#FF7C02;line-height:1.4;white-space:pre-line}
+      .s-tagline{font-size:16px;color:#533583;line-height:1.4;white-space:pre-line}
+      .s-biter{position:absolute;right:80px;bottom:0;height:95%;object-fit:contain;object-position:bottom right}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
+      <div class="s-content">
+        <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+        <div class="s-wa-row">
+          <div class="s-wa-icon"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="18" fill="#25D366"/><path d="M26.3 9.7A11.7 11.7 0 0 0 18 6.3C11.6 6.3 6.3 11.6 6.3 18c0 2 .5 4 1.5 5.7L6 30l6.4-1.7A11.7 11.7 0 0 0 18 29.7c6.4 0 11.7-5.3 11.7-11.7 0-3.1-1.2-6-3.4-8.3zm-8.3 18A9.7 9.7 0 0 1 13 26.3l-.4-.2-3.8 1 1-3.7-.2-.4A9.7 9.7 0 0 1 8.3 18 9.7 9.7 0 0 1 18 8.3 9.7 9.7 0 0 1 27.7 18 9.7 9.7 0 0 1 18 27.7zm5.3-7.3c-.3-.1-1.7-.9-2-.9-.2-.1-.4-.1-.6.1-.2.2-.7.9-.9 1-.1.2-.3.2-.5.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.4.1-.6l.4-.5.2-.4v-.4l-.9-2.1c-.2-.5-.5-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.1 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.6.2-1.2.1-1.3-.1-.1-.2-.2-.5-.3z" fill="white"/></svg></div>
+          <p class="s-phone" id="eb-phone">${esc(d.phone)}</p>
+        </div>
+        <p class="s-pqr" id="eb-pqr">${esc(d.pqr)}</p>
+        <p class="s-tagline" id="eb-tagline">${esc(d.tagline)}</p>
+      </div>
+      <img id="eb-biter" class="s-biter" src="${IMGS}${d.biter}" crossorigin="anonymous">
+    `,
+  },
+
+  // 5. TRES COLUMNAS
+  {
+    id:'tres-columnas', name:'Tres columnas', desc:'Tres tarjetas de beneficios', group:'Contenido',
+    fileName:'tres-columnas-enerbit.pptx',
+    fields:[
+      {section:'Encabezado'},
+      {id:'title',   label:'Título',    type:'text',     val:'Beneficios de elegir enerBit'},
+      {id:'subtitle',label:'Subtítulo', type:'textarea', val:'Todo lo que necesitas para gestionar tu energía.'},
+      ...[1,2,3].flatMap(i=>[
+        {section:`Tarjeta ${i}`},
+        {id:`c${i}title`,label:'Título',   type:'text',     val:['Ahorro garantizado','Instalación sin complicaciones','Soporte siempre disponible'][i-1]},
+        {id:`c${i}label`,label:'Etiqueta', type:'text',     val:`Beneficio ${i}`},
+        {id:`c${i}body`, label:'Texto',    type:'textarea', val:['Reducimos tu factura de energía desde el primer mes, sin costos ocultos.','Nuestro equipo se encarga de todo el proceso, sin papeleo ni cortes.','Atención personalizada por WhatsApp, teléfono o correo cuando la necesites.'][i-1]},
+      ]),
+    ],
+    css:`
+      #slide-container{background:#fff;padding:48px;display:flex;flex-direction:column;justify-content:center;gap:20px}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
+      .s-header{padding-right:110px;display:flex;flex-direction:column;gap:6px}
+      .s-title{font-size:20px;font-weight:700;color:#533583}
+      .s-subtitle{font-size:12px;color:#666}
+      .s-cards{display:flex;gap:16px;height:220px}
+      .s-card{flex:1;background:rgba(83,53,131,.06);border:1.5px solid rgba(83,53,131,.2);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px}
+      .s-card-title{font-size:13px;font-weight:700;color:#533583}
+      .s-card-label{font-size:11px;color:#666}
+      .s-card-body{font-size:12px;color:#533583;line-height:1.6}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
+      <div class="s-header">
+        <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+        <p class="s-subtitle" id="eb-subtitle">${esc(d.subtitle)}</p>
+      </div>
+      <div class="s-cards">
+        ${[1,2,3].map(i=>`<div class="s-card"><div><p class="s-card-title" id="eb-c${i}title">${esc(d['c'+i+'title'])}</p><p class="s-card-label" id="eb-c${i}label">${esc(d['c'+i+'label'])}</p></div><p class="s-card-body" id="eb-c${i}body">${esc(d['c'+i+'body'])}</p></div>`).join('')}
+      </div>
+    `,
+  },
+
+  // 6. MOCKUP MORADO
+  {
+    id:'mockup', name:'Mockup morado', desc:'Fondo morado con celular', group:'Contenido',
+    fileName:'mockup-enerbit.pptx',
+    fields:[
+      {section:'Contenido'},
+      {id:'title',label:'Título', type:'text',     val:'Título'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Nullam dignissim ut nibh eu ornare. Curabitur libero enim, ultricies vitae pellentesque vitae.'},
+    ],
+    css:`
+      #slide-container{background:#533583}
+      #slide-container::before{content:'';position:absolute;top:-100px;right:200px;width:400px;height:400px;background:radial-gradient(circle,rgba(105,65,198,.5) 0%,transparent 70%);pointer-events:none}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
+      .s-content{position:absolute;left:64px;top:0;bottom:0;width:380px;display:flex;flex-direction:column;justify-content:center;gap:16px}
+      .s-title{font-size:44px;font-weight:700;color:#fff;line-height:1.1}
+      .s-body{font-size:13px;color:rgba(255,255,255,.8);line-height:1.65}
+      .s-mockup{position:absolute;right:120px;top:50%;transform:translateY(-50%);height:88%;object-fit:contain}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_WHITE}" crossorigin="anonymous">
+      <div class="s-content">
+        <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+        <p class="s-body" id="eb-body">${esc(d.body)}</p>
+      </div>
+      <img class="s-mockup" src="${IMGS}MOCKUP-CELULAR.png" crossorigin="anonymous">
+    `,
+  },
+
+  // 7. DOS COLUMNAS LISTA
+  {
+    id:'dos-columnas-lista', name:'2 col + lista', desc:'Título grande + tarjetas lista', group:'Contenido',
+    fileName:'dos-columnas-lista-enerbit.pptx',
+    fields:[
+      {section:'Columna izquierda'},
+      {id:'title',  label:'Título',    type:'textarea', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+      {id:'body',   label:'Texto',     type:'textarea', val:'Nulla vel erat non magna bibendum bibendum. Vestibulum mattis lacus a molestie auctor.'},
+      {section:'Cabecera derecha'},
+      {id:'rtitle', label:'Título',    type:'text',     val:'Tres capas, un solo objetivo'},
+      {id:'rsub',   label:'Subtítulo', type:'text',     val:'Control total de la operación.'},
+      ...[1,2,3].flatMap(i=>[
+        {section:`Tarjeta ${i}`},
+        {id:`l${i}title`,label:'Título', type:'text', val:'Título'},
+        {id:`l${i}body`, label:'Texto',  type:'text', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+      ]),
+    ],
+    css:`
+      #slide-container{background:#fff;display:flex;align-items:center;padding:56px;gap:48px}
+      .s-left{width:340px;flex-shrink:0;display:flex;flex-direction:column;gap:16px}
+      .s-main-title{font-size:34px;font-weight:700;color:#533583;line-height:1.15;white-space:pre-line}
+      .s-main-body{font-size:12px;color:#666;line-height:1.65}
+      .s-right{flex:1;display:flex;flex-direction:column;gap:12px}
+      .s-rhead{margin-bottom:4px}
+      .s-rtitle{font-size:14px;font-weight:700;color:#533583}
+      .s-rsub{font-size:12px;color:#666;margin-top:2px}
+      .s-lcard{display:flex;align-items:center;gap:12px;background:rgba(83,53,131,.06);border:1.5px solid rgba(83,53,131,.2);border-radius:12px;padding:12px 16px}
+      .s-sq{width:32px;height:32px;background:#FF7C02;border-radius:6px;flex-shrink:0}
+      .s-lcard-title{font-size:12px;font-weight:700;color:#533583}
+      .s-lcard-body{font-size:11px;color:#666;line-height:1.4}
+    `,
+    render:(d)=>`
+      <div class="s-left">
+        <h2 class="s-main-title" id="eb-title">${esc(d.title)}</h2>
+        <p class="s-main-body" id="eb-body">${esc(d.body)}</p>
+      </div>
+      <div class="s-right">
+        <div class="s-rhead"><p class="s-rtitle" id="eb-rtitle">${esc(d.rtitle)}</p><p class="s-rsub" id="eb-rsub">${esc(d.rsub)}</p></div>
+        ${[1,2,3].map(i=>`<div class="s-lcard"><div class="s-sq"></div><div><p class="s-lcard-title" id="eb-l${i}title">${esc(d['l'+i+'title'])}</p><p class="s-lcard-body" id="eb-l${i}body">${esc(d['l'+i+'body'])}</p></div></div>`).join('')}
+      </div>
+    `,
+  },
+
+  // 8. GRID MORADO
+  {
+    id:'grid-morado', name:'Grid morado 2×3', desc:'6 tarjetas moradas', group:'Contenido',
+    fileName:'grid-morado-enerbit.pptx',
+    fields:[
+      {section:'Encabezado'},
+      {id:'title',label:'Título', type:'text',     val:'Nulla vel erat non magna'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Morbi at ex hendrerit, vulputate mi non, mollis nibh. Donec elit arcu, iaculis non urna eu.'},
+      ...[1,2,3,4,5,6].flatMap(i=>[
+        {section:`Tarjeta ${i}`},
+        {id:`c${i}title`,label:'Título', type:'text', val:'Nulla vel erat non magna'},
+        {id:`c${i}body`, label:'Texto',  type:'text', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+      ]),
+    ],
+    css:`
+      #slide-container{background:#fff;padding:48px;display:flex;flex-direction:column;justify-content:center;gap:16px}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
+      .s-header{padding-right:110px;display:flex;flex-direction:column;gap:6px}
+      .s-title{font-size:24px;font-weight:700;color:#533583}
+      .s-body{font-size:11px;color:#555;line-height:1.6}
+      .s-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:10px;height:235px}
+      .s-card{background:#533583;border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+      .s-card-title{font-size:12px;font-weight:700;color:#fff;line-height:1.3}
+      .s-card-body{font-size:11px;color:rgba(255,255,255,.8);line-height:1.5}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
+      <div class="s-header">
+        <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+        <p class="s-body" id="eb-body">${esc(d.body)}</p>
+      </div>
+      <div class="s-grid">
+        ${[1,2,3,4,5,6].map(i=>`<div class="s-card"><p class="s-card-title" id="eb-c${i}title">${esc(d['c'+i+'title'])}</p><p class="s-card-body" id="eb-c${i}body">${esc(d['c'+i+'body'])}</p></div>`).join('')}
+      </div>
+    `,
+  },
+
+  // 9. GRID 4 COL
+  {
+    id:'grid-4col', name:'Grid lila 2×4', desc:'8 tarjetas lavanda', group:'Contenido',
+    fileName:'grid-4col-enerbit.pptx',
+    fields:[
+      {section:'Encabezado'},
+      {id:'title',label:'Título', type:'text', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+      ...[1,2,3,4,5,6,7,8].flatMap(i=>[
+        {section:`Tarjeta ${i}`},
+        {id:`c${i}title`,label:'Título', type:'text', val:'Lorem ipsum dolor sit amet'},
+        {id:`c${i}body`, label:'Texto',  type:'text', val:'Suspendisse potenti. Vestibulum egestas libero mauris, id consequat velit ultricies non.'},
+      ]),
+    ],
+    css:`
+      #slide-container{background:#fff;padding:48px;display:flex;flex-direction:column;justify-content:center;gap:20px}
+      .s-title{font-size:18px;font-weight:700;color:#533583}
+      .s-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);gap:8px;height:310px}
+      .s-card{background:rgba(83,53,131,.06);border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:6px}
+      .s-card-title{font-size:11px;font-weight:700;color:#533583;line-height:1.3}
+      .s-card-body{font-size:10px;color:#533583;line-height:1.55}
+    `,
+    render:(d)=>`
+      <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+      <div class="s-grid">
+        ${[1,2,3,4,5,6,7,8].map(i=>`<div class="s-card"><p class="s-card-title" id="eb-c${i}title">${esc(d['c'+i+'title'])}</p><p class="s-card-body" id="eb-c${i}body">${esc(d['c'+i+'body'])}</p></div>`).join('')}
+      </div>
+    `,
+  },
+
+  // 10. BITER BLANCO
+  {
+    id:'biter-blanco', name:'Biter blanco', desc:'Título naranja + biter', group:'Contenido',
+    fileName:'biter-blanco-enerbit.pptx',
+    fields:[
+      {section:'Contenido'},
+      {id:'title',label:'Título (naranja)', type:'text',     val:'Título'},
+      {id:'body', label:'Texto',            type:'textarea', val:'Nullam dignissim ut nibh eu ornare. Curabitur libero enim, ultricies vitae pellentesque vitae.'},
+      {section:'Imagen'},
+      {id:'biter',label:'Biter',            type:'biter',    val:'biter_hombre_thumbsup.png'},
+    ],
+    css:`
+      #slide-container{background:#fff}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
+      .s-content{position:absolute;left:64px;top:0;bottom:0;width:360px;display:flex;flex-direction:column;justify-content:center;gap:16px}
+      .s-title{font-size:44px;font-weight:700;color:#FF7C02;line-height:1.1}
+      .s-body{font-size:13px;color:#533583;line-height:1.65}
+      .s-biter{position:absolute;right:140px;top:55%;transform:translateY(-50%);height:95%;object-fit:contain}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
+      <div class="s-content">
+        <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+        <p class="s-body" id="eb-body">${esc(d.body)}</p>
+      </div>
+      <img id="eb-biter" class="s-biter" src="${IMGS}${d.biter}" crossorigin="anonymous">
+    `,
+  },
+
+  // 11. LISTA BARRAS
+  {
+    id:'lista-barras', name:'Lista con barras', desc:'Título grande + 5 ítems', group:'Contenido',
+    fileName:'lista-barras-enerbit.pptx',
+    fields:[
+      {section:'Columna izquierda'},
+      {id:'title',label:'Título', type:'textarea', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Nulla vel erat non magna bibendum bibendum. Vestibulum mattis lacus a molestie auctor.'},
+      ...[1,2,3,4,5].flatMap(i=>[
+        {section:`Ítem ${i}`},
+        {id:`i${i}`,label:'Texto', type:'text', val:'Suspendisse potenti. Vestibulum egestas libero mauris, id consequat velit.'},
+      ]),
+    ],
+    css:`
+      #slide-container{background:#fff;display:flex;align-items:center;padding:64px;gap:56px}
+      .s-left{width:320px;flex-shrink:0;display:flex;flex-direction:column;gap:16px}
+      .s-main-title{font-size:32px;font-weight:700;color:#533583;line-height:1.15;white-space:pre-line}
+      .s-main-body{font-size:11px;color:#666;line-height:1.7}
+      .s-right{flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px}
+      .s-item{display:flex;align-items:flex-start;gap:14px}
+      .s-bar{width:4px;min-height:36px;background:#533583;border-radius:2px;flex-shrink:0;margin-top:2px}
+      .s-item-text{font-size:12px;color:#533583;line-height:1.6}
+    `,
+    render:(d)=>`
+      <div class="s-left">
+        <h2 class="s-main-title" id="eb-title">${esc(d.title)}</h2>
+        <p class="s-main-body" id="eb-body">${esc(d.body)}</p>
+      </div>
+      <div class="s-right">
+        ${[1,2,3,4,5].map(i=>`<div class="s-item"><div class="s-bar"></div><p class="s-item-text" id="eb-i${i}">${esc(d['i'+i])}</p></div>`).join('')}
+      </div>
+    `,
+  },
+
+  // 12. MÉTRICAS MIXTO
+  {
+    id:'metricas-mixto', name:'Métricas mixto', desc:'Mockup + métricas + comparación', group:'Contenido',
+    fileName:'metricas-mixto-enerbit.pptx',
+    fields:[
+      {section:'Izquierda'},
+      {id:'title',label:'Título', type:'text',     val:'Título'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Nullam dignissim ut nibh eu ornare. Curabitur libero enim.'},
+      {section:'Métrica 1'},
+      {id:'m1num', label:'Número',      type:'text', val:'22 min'},
+      {id:'m1desc',label:'Descripción', type:'text', val:'Tiempo promedio en el proceso completo de instalación.'},
+      {section:'Métrica 2'},
+      {id:'m2num', label:'Número',      type:'text', val:'2×'},
+      {id:'m2desc',label:'Descripción', type:'text', val:'Aumento de productividad en 2 años de operación.'},
+      {section:'Comparación (naranja)'},
+      {id:'clabel',label:'Etiqueta',     type:'text', val:'Titulo'},
+      {id:'cy1',   label:'Año 1',        type:'text', val:'2023'},
+      {id:'cn1',   label:'Número año 1', type:'text', val:'12'},
+      {id:'cy2',   label:'Año 2',        type:'text', val:'2026'},
+      {id:'cn2',   label:'Número año 2', type:'text', val:'25'},
+    ],
+    css:`
+      #slide-container{background:#fff;display:flex;align-items:stretch;padding:48px;gap:32px}
+      .s-left{width:280px;flex-shrink:0;display:flex;flex-direction:column;justify-content:space-between}
+      .s-left-top{display:flex;flex-direction:column;gap:12px}
+      .s-main-title{font-size:32px;font-weight:700;color:#533583;line-height:1.1}
+      .s-main-body{font-size:11px;color:#666;line-height:1.65}
+      .s-mockup{width:280px;object-fit:contain;align-self:flex-start}
+      .s-right{flex:1;display:flex;flex-direction:column;justify-content:center;gap:12px}
+      .s-top-cards{display:flex;gap:12px;align-items:center;justify-content:center}
+      .s-mcard{flex:1;background:rgba(83,53,131,.07);border-radius:12px;padding:14px 20px;display:flex;flex-direction:column;gap:6px;max-height:120px}
+      .s-mnum{font-size:36px;font-weight:700;color:#533583;line-height:1}
+      .s-mdesc{font-size:11px;color:#533583;line-height:1.5}
+      .s-ccard{background:#FF7C02;border-radius:12px;padding:16px 24px;display:flex;align-items:center;height:100px}
+      .s-clabel{font-size:20px;font-weight:700;color:#fff;flex:1}
+      .s-cdiv{width:1px;height:60px;background:rgba(255,255,255,.4);margin:0 24px}
+      .s-ccol{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:60px}
+      .s-cyear{font-size:11px;font-weight:600;color:rgba(255,255,255,.8)}
+      .s-cnum{font-size:36px;font-weight:700;color:#fff;line-height:1}
+    `,
+    render:(d)=>`
+      <div class="s-left">
+        <div class="s-left-top">
+          <h2 class="s-main-title" id="eb-title">${esc(d.title)}</h2>
+          <p class="s-main-body" id="eb-body">${esc(d.body)}</p>
+        </div>
+        <img class="s-mockup" src="${IMGS}MOCKUP-CELULAR.png" crossorigin="anonymous">
+      </div>
+      <div class="s-right">
+        <div class="s-top-cards">
+          <div class="s-mcard"><p class="s-mnum" id="eb-m1num">${esc(d.m1num)}</p><p class="s-mdesc" id="eb-m1desc">${esc(d.m1desc)}</p></div>
+          <div class="s-mcard"><p class="s-mnum" id="eb-m2num">${esc(d.m2num)}</p><p class="s-mdesc" id="eb-m2desc">${esc(d.m2desc)}</p></div>
+        </div>
+        <div class="s-ccard">
+          <p class="s-clabel" id="eb-clabel">${esc(d.clabel)}</p>
+          <div class="s-cdiv"></div>
+          <div class="s-ccol"><p class="s-cyear" id="eb-cy1">${esc(d.cy1)}</p><p class="s-cnum" id="eb-cn1">${esc(d.cn1)}</p></div>
+          <div class="s-cdiv"></div>
+          <div class="s-ccol"><p class="s-cyear" id="eb-cy2">${esc(d.cy2)}</p><p class="s-cnum" id="eb-cn2">${esc(d.cn2)}</p></div>
+        </div>
+      </div>
+    `,
+  },
+
+  // 13. IPAD
+  {
+    id:'ipad', name:'iPad / Mockup', desc:'Texto + imagen lateral', group:'Contenido',
+    fileName:'ipad-enerbit.pptx',
+    fields:[
+      {section:'Contenido'},
+      {id:'title',label:'Título', type:'textarea', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Nulla vel erat non magna bibendum bibendum. Vestibulum mattis lacus a molestie auctor. Morbi at ex hendrerit.'},
+    ],
+    css:`
+      #slide-container{background:#fff}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
+      .s-content{position:absolute;left:64px;top:0;bottom:0;width:340px;display:flex;flex-direction:column;justify-content:center;gap:16px}
+      .s-title{font-size:32px;font-weight:700;color:#533583;line-height:1.15;white-space:pre-line}
+      .s-body{font-size:12px;color:#666;line-height:1.7}
+      .s-ipad{position:absolute;right:20px;top:50%;transform:translateY(-50%);height:90%;object-fit:contain}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
+      <div class="s-content">
+        <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+        <p class="s-body" id="eb-body">${esc(d.body)}</p>
+      </div>
+      <img class="s-ipad" src="${IMGS}ipad-b2b.png" crossorigin="anonymous">
+    `,
+  },
+
+  // 14. SIMPLE BLANCO
+  {
+    id:'simple-blanco', name:'Simple blanco', desc:'Texto centrado, fondo blanco', group:'Transición',
+    fileName:'simple-blanco-enerbit.pptx',
+    fields:[
+      {section:'Contenido'},
+      {id:'title',label:'Título', type:'text',     val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Nulla vel erat non magna bibendum bibendum. Vestibulum mattis lacus a molestie auctor.'},
+    ],
+    css:`
+      #slide-container{background:#fff;display:flex;flex-direction:column;justify-content:center;padding:80px;gap:16px}
+      .s-logo{position:absolute;top:28px;right:36px;width:90px}
+      .s-title{font-size:36px;font-weight:700;color:#533583;line-height:1.15;max-width:600px}
+      .s-body{font-size:14px;color:#666;line-height:1.7;max-width:560px}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
+      <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+      <p class="s-body" id="eb-body">${esc(d.body)}</p>
+    `,
+  },
+
+  // 15. SIMPLE MORADO
+  {
+    id:'simple-morado', name:'Simple morado', desc:'Texto centrado, fondo morado', group:'Transición',
+    fileName:'simple-morado-enerbit.pptx',
+    fields:[
+      {section:'Contenido'},
+      {id:'title',label:'Título', type:'text',     val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Nulla vel erat non magna bibendum bibendum. Vestibulum mattis lacus a molestie auctor.'},
+    ],
+    css:`
+      #slide-container{background:#533583;display:flex;flex-direction:column;justify-content:center;padding:80px;gap:16px}
+      #slide-container::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(105,65,198,.5) 0%,transparent 70%);pointer-events:none}
+      .s-logo{position:absolute;top:28px;right:36px;width:90px}
+      .s-title{font-size:36px;font-weight:700;color:#fff;line-height:1.15;max-width:600px}
+      .s-body{font-size:14px;color:rgba(255,255,255,.75);line-height:1.7;max-width:560px}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_WHITE}" crossorigin="anonymous">
+      <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+      <p class="s-body" id="eb-body">${esc(d.body)}</p>
+    `,
+  },
+
+]; // end TEMPLATES
+
+// ── Biters ────────────────────────────────────────────────────────────────────
+const BITERS = [
+  {val:'biter_mujer_thumbsup.png',  label:'Mujer thumbs up'},
+  {val:'biter_mujer_celular.png',   label:'Mujer celular'},
+  {val:'biter_hombre_thumbsup.png', label:'Hombre thumbs up'},
+];
+
+// ── App state ─────────────────────────────────────────────────────────────────
+let currentTpl    = null;
+let currentValues = {};
+let deck          = []; // [{tplId, values, label}]
+
+// ── Build nav ─────────────────────────────────────────────────────────────────
+function buildNav() {
+  const nav = document.getElementById('nav');
+  const groups = {};
+  for (const t of TEMPLATES) {
+    if (!groups[t.group]) groups[t.group] = [];
+    groups[t.group].push(t);
+  }
+  let html = '';
+  for (const [g, tpls] of Object.entries(groups)) {
+    html += `<p class="nav-group-label">${g}</p>`;
+    for (const t of tpls) {
+      html += `<button class="nav-btn" data-id="${t.id}"><span>${t.name}</span><span class="nav-desc">${t.desc}</span></button>`;
+    }
+  }
+  nav.innerHTML = html;
+  nav.addEventListener('click', e => {
+    const btn = e.target.closest('.nav-btn');
+    if (btn) selectTemplate(btn.dataset.id);
+  });
+}
+
+// ── Build panel form ──────────────────────────────────────────────────────────
+function buildPanel(tpl) {
+  let html = '';
+  let inSection = false;
+  for (const f of tpl.fields) {
+    if (f.section !== undefined) {
+      if (inSection) html += '</div>';
+      html += `<div class="panel-section"><p class="section-label">${f.section}</p>`;
+      inSection = true;
+      continue;
+    }
+    const val = currentValues[f.id] ?? f.val;
+    if (f.type === 'text') {
+      html += `<div class="field"><label>${f.label}</label><input type="text" data-fid="${f.id}" value="${esc(val)}"></div>`;
+    } else if (f.type === 'textarea') {
+      html += `<div class="field"><label>${f.label}</label><textarea data-fid="${f.id}" rows="3">${esc(val)}</textarea></div>`;
+    } else if (f.type === 'biter') {
+      html += `<div class="field"><label>${f.label}</label><select data-fid="${f.id}">${BITERS.map(b=>`<option value="${b.val}"${val===b.val?' selected':''}>${b.label}</option>`).join('')}</select></div>`;
+    }
+  }
+  if (inSection) html += '</div>';
+  // Add to deck button at bottom
+  html += `<button class="add-deck-btn" id="add-deck-btn">+ Agregar al deck</button>`;
+  document.getElementById('panel').innerHTML = html;
+  document.getElementById('add-deck-btn').addEventListener('click', addToDeck);
+}
+
+// ── Render preview slide ──────────────────────────────────────────────────────
+function renderSlide(tpl) {
+  document.getElementById('tpl-css').textContent = tpl.css;
+  document.getElementById('slide-container').innerHTML = tpl.render(currentValues);
+}
+
+// ── Update single field in preview ───────────────────────────────────────────
+function updateField(fieldId, val) {
+  const el = document.getElementById('eb-' + fieldId);
+  if (!el) return;
+  if (el.tagName === 'IMG') el.src = IMGS + val;
+  else el.textContent = val;
+}
+
+// ── Select template ───────────────────────────────────────────────────────────
+function selectTemplate(id) {
+  currentTpl = TEMPLATES.find(t => t.id === id);
+  if (!currentTpl) return;
+
+  currentValues = {};
+  for (const f of currentTpl.fields) {
+    if (f.id) currentValues[f.id] = f.val;
+  }
+
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.id === id));
+  document.getElementById('topbar-tpl-name').textContent = currentTpl.name;
+  document.getElementById('export-slide-btn').disabled = false;
+  document.getElementById('preview-empty').style.display = 'none';
+  document.getElementById('slide-scaler').style.display = '';
+
+  buildPanel(currentTpl);
+  renderSlide(currentTpl);
+  scaleSlide();
+}
+
+// ── Scale preview ─────────────────────────────────────────────────────────────
+function scaleSlide() {
+  const area   = document.getElementById('preview-area');
+  const scaler = document.getElementById('slide-scaler');
+  const s = Math.min((area.clientWidth - 48) / 960, (area.clientHeight - 48) / 540, 1);
+  scaler.style.transform = `scale(${s})`;
+}
+
+// ── Deck: add current template ────────────────────────────────────────────────
+function addToDeck() {
+  if (!currentTpl) return;
+  deck.push({ tplId: currentTpl.id, values: { ...currentValues }, label: currentTpl.name });
+  updateDeckUI();
+}
+
+// ── Deck: remove item ─────────────────────────────────────────────────────────
+function removeDeckItem(idx) {
+  deck.splice(idx, 1);
+  updateDeckUI();
+}
+
+// ── Deck: update UI ───────────────────────────────────────────────────────────
+function updateDeckUI() {
+  const count     = deck.length;
+  const badge     = document.getElementById('deck-badge');
+  const countEl   = document.getElementById('deck-count');
+  const listEl    = document.getElementById('deck-list');
+  const emptyMsg  = document.getElementById('deck-empty-msg');
+  const dlBtn     = document.getElementById('deck-download-btn');
+  const topDlBtn  = document.getElementById('export-deck-btn');
+
+  countEl.textContent = count;
+  badge.style.display = count > 0 ? '' : 'none';
+  topDlBtn.disabled   = count < 2;
+  dlBtn.disabled      = count < 2;
+
+  if (count === 0) {
+    listEl.innerHTML = '<p class="deck-empty" id="deck-empty-msg">Agrega slides para armar tu presentación</p>';
+    return;
+  }
+
+  listEl.innerHTML = deck.map((item, i) => `
+    <div class="deck-item" draggable="true" data-idx="${i}">
+      <span class="deck-item-num">${i+1}</span>
+      <span class="deck-item-name">${esc(item.label)}</span>
+      <button class="deck-item-remove" data-remove="${i}" title="Quitar">×</button>
+    </div>
+  `).join('');
+
+  // Remove buttons
+  listEl.querySelectorAll('[data-remove]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      removeDeckItem(parseInt(e.currentTarget.dataset.remove));
+    });
+  });
+
+  // Drag to reorder
+  let dragIdx = null;
+  listEl.querySelectorAll('.deck-item').forEach(el => {
+    el.addEventListener('dragstart', () => { dragIdx = parseInt(el.dataset.idx); });
+    el.addEventListener('dragover', e => { e.preventDefault(); });
+    el.addEventListener('drop', () => {
+      const dropIdx = parseInt(el.dataset.idx);
+      if (dragIdx === null || dragIdx === dropIdx) return;
+      const moved = deck.splice(dragIdx, 1)[0];
+      deck.splice(dropIdx, 0, moved);
+      updateDeckUI();
+    });
+  });
+}
+
+// ── CSS scoping ───────────────────────────────────────────────────────────────
+function scopeCSS(css, id) {
+  return css
+    .replace(/#slide-container/g, `#${id}`)
+    .replace(/(^|[\s{,])\.s-/gm, (m, pre) => `${pre}#${id} .s-`);
+}
+
+// ── Deck export ───────────────────────────────────────────────────────────────
+async function exportDeck() {
+  if (deck.length === 0) return;
+
+  const btn1 = document.getElementById('export-deck-btn');
+  const btn2 = document.getElementById('deck-download-btn');
+  btn1.textContent = 'Generando...'; btn1.disabled = true;
+  btn2.textContent = 'Generando...'; btn2.disabled = true;
+
+  const renderArea = document.getElementById('deck-render-area');
+  renderArea.innerHTML = '';
+
+  // Aggregate scoped CSS and render HTML for each slide
+  let allCSS = `
+    .deck-slide-host {
+      width:960px; height:540px;
+      position:relative; overflow:hidden;
+      font-family:'Inter',sans-serif;
+    }
+  `;
+  const selectors = [];
+
+  deck.forEach((item, i) => {
+    const tpl = TEMPLATES.find(t => t.id === item.tplId);
+    if (!tpl) return;
+    const slideId = `ds-${i}`;
+    selectors.push(`#${slideId}`);
+    allCSS += scopeCSS(tpl.css, slideId);
+    const div = document.createElement('div');
+    div.id = slideId;
+    div.className = 'deck-slide-host';
+    div.innerHTML = tpl.render(item.values);
+    renderArea.appendChild(div);
+  });
+
+  document.getElementById('deck-render-css').textContent = allCSS;
+
+  // Wait for images to load
+  const imgs = renderArea.querySelectorAll('img');
+  await Promise.all(Array.from(imgs).map(img =>
+    img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r; })
+  ));
+  // Extra buffer for rendering
+  await new Promise(r => setTimeout(r, 400));
+
+  try {
+    await domToPptx.exportToPptx(selectors, {
+      fileName: 'deck-enerbit.pptx',
+      autoEmbedFonts: true,
+    });
+  } catch (e) {
+    alert('Error al exportar: ' + e.message);
+  }
+
+  // Cleanup
+  renderArea.innerHTML = '';
+  document.getElementById('deck-render-css').textContent = '';
+
+  btn1.textContent = '⬇ Descargar deck'; btn1.disabled = deck.length < 2;
+  btn2.textContent = '⬇ Descargar deck PPTX'; btn2.disabled = deck.length < 2;
+}
+
+// ── Events ────────────────────────────────────────────────────────────────────
+document.getElementById('panel').addEventListener('input', e => {
+  const fid = e.target.dataset.fid;
+  if (!fid) return;
+  currentValues[fid] = e.target.value;
+  updateField(fid, e.target.value);
+});
+
+document.getElementById('export-slide-btn').addEventListener('click', async () => {
+  if (!currentTpl) return;
+  const btn = document.getElementById('export-slide-btn');
+  btn.textContent = 'Generando...'; btn.disabled = true;
+  try {
+    await domToPptx.exportToPptx('#slide-container', {
+      fileName: currentTpl.fileName, autoEmbedFonts: true,
+    });
+  } catch (e) { alert('Error: ' + e.message); }
+  btn.textContent = '⬇ Este slide'; btn.disabled = false;
+});
+
+document.getElementById('export-deck-btn').addEventListener('click', exportDeck);
+document.getElementById('deck-download-btn').addEventListener('click', exportDeck);
+document.getElementById('deck-clear-btn').addEventListener('click', () => { deck = []; updateDeckUI(); });
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+buildNav();
+scaleSlide();
+window.addEventListener('resize', scaleSlide);
+</script>
+</body>
+</html>
