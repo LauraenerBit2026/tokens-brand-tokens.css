@@ -180,6 +180,16 @@
     .img-thumb span { font-size: 8px; color: #999; text-align: center; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
     .img-loading { font-size: 10px; color: #aaa; text-align: center; padding: 12px 0; }
 
+    /* ── Toggle switch ── */
+    .field-toggle { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .field-toggle label:first-child { margin: 0; font-weight: 500; color: #444; font-size: 12px; }
+    .toggle-switch { position: relative; display: inline-block; width: 36px; height: 20px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: #ddd; border-radius: 20px; transition: background .2s; }
+    .toggle-slider:before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform .2s; box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+    .toggle-switch input:checked + .toggle-slider { background: #533583; }
+    .toggle-switch input:checked + .toggle-slider:before { transform: translateX(16px); }
+
     /* ── Slide base ── */
     #slide-container {
       width: 960px; height: 540px;
@@ -258,6 +268,7 @@
 const CDN   = 'https://cdn.jsdelivr.net/gh/LauraenerBit2026/tokens-brand-tokens.css@main';
 const IMGS  = CDN + '/images/';
 const LOGOS = CDN + '/logos/';
+const BGS   = CDN + '/backgrounds/';
 const LOGO_COLOR = `${LOGOS}logo-color.svg`;
 const LOGO_WHITE = `${LOGOS}logo-white.svg`;
 
@@ -329,14 +340,14 @@ const TEMPLATES = [
       {id:'c2body', label:'Descripción', type:'textarea', val:'Descripción del segundo punto. Mantén los textos cortos y directos.'},
     ],
     css:`
-      #slide-container{background:#fff}
+      #slide-container{background:#fff;display:flex;flex-direction:column;justify-content:center;gap:24px;padding:64px 48px}
       .s-logo{position:absolute;top:28px;right:36px;width:90px}
-      .s-header{display:flex;align-items:flex-start;gap:16px;padding:48px 48px 0}
+      .s-header{display:flex;align-items:flex-start;gap:16px}
       .s-accent{width:4px;height:52px;background:#FF7C02;border-radius:2px;flex-shrink:0;margin-top:4px}
       .s-header-text{flex:1}
       .s-label{font-size:10px;font-weight:600;color:#B2B2B2;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
       .s-title{font-size:26px;font-weight:700;color:#533583;line-height:1.15}
-      .s-cols{display:flex;gap:24px;padding:28px 48px 0}
+      .s-cols{display:flex;gap:24px}
       .s-col{flex:1;background:rgba(83,53,131,.05);border-radius:12px;padding:24px;border:1.5px solid rgba(178,178,178,.3);display:flex;flex-direction:column;gap:12px}
       .s-col svg{width:28px;height:28px;fill:#533583}
       .s-col-title{font-size:14px;font-weight:700;color:#533583}
@@ -529,6 +540,7 @@ const TEMPLATES = [
     ],
     css:`
       #slide-container{background:#fff;display:flex;align-items:center;padding:56px;gap:48px}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
       .s-left{width:340px;flex-shrink:0;display:flex;flex-direction:column;gap:16px}
       .s-main-title{font-size:34px;font-weight:700;color:#533583;line-height:1.15;white-space:pre-line}
       .s-main-body{font-size:12px;color:#666;line-height:1.65}
@@ -542,6 +554,7 @@ const TEMPLATES = [
       .s-lcard-body{font-size:11px;color:#666;line-height:1.4}
     `,
     render:(d)=>`
+      <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
       <div class="s-left">
         <h2 class="s-main-title" id="eb-title">${esc(d.title)}</h2>
         <p class="s-main-body" id="eb-body">${esc(d.body)}</p>
@@ -818,7 +831,275 @@ const TEMPLATES = [
     `,
   },
 
+
+  // ── CON FONDO DEGRADADO ────────────────────────────────────────────────────
+
+  // F1. TRES COLUMNAS · FONDO MORADO
+  {
+    id:'tres-columnas-fondo', name:'Tres columnas · Fondo morado', desc:'Cards blancas sobre degradado', group:'Con fondo degradado',
+    fileName:'tres-columnas-fondo-enerbit.pptx',
+    fields:[
+      {section:'Encabezado'},
+      {id:'title',   label:'Título',    type:'text',     val:'Beneficios de elegir enerBit'},
+      {id:'subtitle',label:'Subtítulo', type:'textarea', val:'Todo lo que necesitas para gestionar tu energía.'},
+      ...[1,2,3].flatMap(i=>[
+        {section:`Tarjeta ${i}`},
+        {id:`c${i}title`,label:'Título',   type:'text',     val:['Ahorro garantizado','Instalación sin complicaciones','Soporte siempre disponible'][i-1]},
+        {id:`c${i}label`,label:'Etiqueta', type:'text',     val:`Beneficio ${i}`},
+        {id:`c${i}body`, label:'Texto',    type:'textarea', val:['Reducimos tu factura de energía desde el primer mes, sin costos ocultos.','Nuestro equipo se encarga de todo el proceso, sin papeleo ni cortes.','Atención personalizada por WhatsApp, teléfono o correo cuando la necesites.'][i-1]},
+      ]),
+    ],
+    css:`
+      #slide-container{background:url('${BGS}bg-morado-blanco.jpg') center/cover no-repeat;padding:48px;display:flex;flex-direction:column;justify-content:center;gap:20px}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
+      .s-header{padding-right:110px;display:flex;flex-direction:column;gap:6px}
+      .s-title{font-size:20px;font-weight:700;color:#fff}
+      .s-subtitle{font-size:12px;color:rgba(255,255,255,.8)}
+      .s-cards{display:flex;gap:16px;height:220px}
+      .s-card{flex:1;background:rgba(255,255,255,.97);border:1.5px solid rgba(255,255,255,.25);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px}
+      .s-card-title{font-size:13px;font-weight:700;color:#533583}
+      .s-card-label{font-size:11px;color:#888}
+      .s-card-body{font-size:12px;color:#533583;line-height:1.6}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_WHITE}" crossorigin="anonymous">
+      <div class="s-header">
+        <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+        <p class="s-subtitle" id="eb-subtitle">${esc(d.subtitle)}</p>
+      </div>
+      <div class="s-cards">
+        ${[1,2,3].map(i=>`<div class="s-card"><div><p class="s-card-title" id="eb-c${i}title">${esc(d['c'+i+'title'])}</p><p class="s-card-label" id="eb-c${i}label">${esc(d['c'+i+'label'])}</p></div><p class="s-card-body" id="eb-c${i}body">${esc(d['c'+i+'body'])}</p></div>`).join('')}
+      </div>
+    `,
+  },
+
+  // F2. BITER · FONDO NARANJA
+  {
+    id:'biter-fondo', name:'Biter · Fondo naranja', desc:'Texto + biter sobre degradado claro', group:'Con fondo degradado',
+    fileName:'biter-fondo-enerbit.pptx',
+    fields:[
+      {section:'Contenido'},
+      {id:'title',label:'Título', type:'textarea', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Nulla vel erat non magna bibendum bibendum. Vestibulum mattis lacus a molestie auctor. Morbi at ex hendrerit, vulputate mi non, mollis nibh. Donec elit arcu, iaculis non urna eu.'},
+      {section:'Imagen'},
+      {id:'biter',label:'Biter', type:'image-pick', val:'biter_mujer_thumbsup.png'},
+    ],
+    css:`
+      #slide-container{background:url('${BGS}bg-naranja-morado%20amarillo-blanco.jpg') center/cover no-repeat}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
+      .s-content{position:absolute;left:80px;top:0;bottom:0;width:420px;display:flex;flex-direction:column;justify-content:center;gap:20px}
+      .s-title{font-size:32px;font-weight:700;color:#533583;line-height:1.2;white-space:pre-line}
+      .s-body{font-size:13px;color:#533583;line-height:1.65}
+      .s-biter{position:absolute;right:0;top:0;bottom:0;height:100%;object-fit:contain;object-position:right bottom}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
+      <div class="s-content">
+        <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+        <p class="s-body" id="eb-body">${esc(d.body)}</p>
+      </div>
+      <img id="eb-biter" class="s-biter" src="${IMGS}${d.biter}" crossorigin="anonymous">
+    `,
+  },
+
+  // F3. MOCKUP + STATS · FONDO DEGRADADO
+  {
+    id:'mockup-stats-fondo', name:'Mockup + stats · Fondo', desc:'Celular + 3 métricas sobre degradado', group:'Con fondo degradado',
+    fileName:'mockup-stats-fondo-enerbit.pptx',
+    fields:[
+      {section:'Contenido'},
+      {id:'title',label:'Título', type:'text',     val:'Título'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Nullam dignissim ut nibh eu ornare. Curabitur libero enim, ultricies vitae pellentesque vitae, tristique vel arcu.'},
+      {section:'Métrica 1 (izquierda)'},
+      {id:'m1num', label:'Número',      type:'text', val:'+44.000'},
+      {id:'m1desc',label:'Descripción', type:'text', val:'Clientes en toda Colombia'},
+      {section:'Métrica 2 (centro — destacada)'},
+      {id:'m2num', label:'Número',      type:'text', val:'+100'},
+      {id:'m2desc',label:'Descripción', type:'text', val:'Municipios con cobertura activa'},
+      {section:'Métrica 3 (derecha)'},
+      {id:'m3num', label:'Número',      type:'text', val:'24/7'},
+      {id:'m3desc',label:'Descripción', type:'text', val:'Monitoreo y soporte continuo'},
+    ],
+    css:`
+      #slide-container{background:url('${BGS}bg-naranja-puro.jpg') center/cover no-repeat}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
+      .s-mockup{position:absolute;left:40px;top:0;bottom:170px;width:360px;object-fit:contain;object-position:left center}
+      .s-right{position:absolute;left:400px;right:48px;top:64px;bottom:185px;display:flex;flex-direction:column;justify-content:center;gap:16px}
+      .s-title{font-size:44px;font-weight:700;color:#fff;line-height:1.1}
+      .s-body{font-size:13px;color:rgba(255,255,255,.8);line-height:1.65}
+      .s-bottom{position:absolute;bottom:0;left:0;right:0;height:175px;display:flex;padding:20px 48px;gap:20px;align-items:center}
+      .s-mcard{flex:1;height:130px;border-radius:16px;padding:16px 22px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+      .s-mcard-glass{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3)}
+      .s-mcard-white{background:rgba(255,255,255,.98);box-shadow:0 8px 32px rgba(0,0,0,.2)}
+      .s-mnum-glass{font-size:36px;font-weight:700;color:#fff;line-height:1}
+      .s-mdesc-glass{font-size:11px;color:rgba(255,255,255,.85);line-height:1.4}
+      .s-mnum-white{font-size:36px;font-weight:700;color:#533583;line-height:1}
+      .s-mdesc-white{font-size:11px;color:#533583;line-height:1.4}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_WHITE}" crossorigin="anonymous">
+      <img class="s-mockup" src="${IMGS}MOCKUP-CELULAR.png" crossorigin="anonymous">
+      <div class="s-right">
+        <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+        <p class="s-body" id="eb-body">${esc(d.body)}</p>
+      </div>
+      <div class="s-bottom">
+        <div class="s-mcard s-mcard-glass"><p class="s-mnum-glass" id="eb-m1num">${esc(d.m1num)}</p><p class="s-mdesc-glass" id="eb-m1desc">${esc(d.m1desc)}</p></div>
+        <div class="s-mcard s-mcard-white"><p class="s-mnum-white" id="eb-m2num">${esc(d.m2num)}</p><p class="s-mdesc-white" id="eb-m2desc">${esc(d.m2desc)}</p></div>
+        <div class="s-mcard s-mcard-glass"><p class="s-mnum-glass" id="eb-m3num">${esc(d.m3num)}</p><p class="s-mdesc-glass" id="eb-m3desc">${esc(d.m3desc)}</p></div>
+      </div>
+    `,
+  },
+
+
+  // F4. IPAD + STATS · FONDO MORADO
+  {
+    id:'ipad-stats-fondo', name:'iPad + stats · Fondo morado', desc:'iPad inclinado + 3 métricas sobre morado', group:'Con fondo degradado',
+    fileName:'ipad-stats-fondo-enerbit.pptx',
+    fields:[
+      {section:'Contenido'},
+      {id:'title',label:'Título', type:'text',     val:'Título'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Nullam dignissim ut nibh eu ornare. Curabitur libero enim, ultricies vitae pellentesque vitae, tristique vel arcu. Praesent quis nisl efficitur mi egestas blandit.'},
+      {section:'Métrica 1 (izquierda)'},
+      {id:'m1num', label:'Número',      type:'text', val:'+44.000'},
+      {id:'m1desc',label:'Descripción', type:'text', val:'Clientes en toda Colombia'},
+      {section:'Métrica 2 (centro — destacada)'},
+      {id:'m2num', label:'Número',      type:'text', val:'+100'},
+      {id:'m2desc',label:'Descripción', type:'text', val:'Municipios con cobertura activa'},
+      {section:'Métrica 3 (derecha)'},
+      {id:'m3num', label:'Número',      type:'text', val:'24/7'},
+      {id:'m3desc',label:'Descripción', type:'text', val:'Monitoreo y soporte continuo'},
+    ],
+    css:`
+      #slide-container{background:url('${BGS}bg-morado-morado.jpg') center/cover no-repeat}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
+      .s-ipad{position:absolute;left:20px;top:20px;bottom:170px;width:300px;object-fit:contain;object-position:center;transform:rotate(-8deg) translateX(10px)}
+      .s-right{position:absolute;left:360px;right:48px;top:64px;bottom:185px;display:flex;flex-direction:column;justify-content:center;gap:16px}
+      .s-title{font-size:44px;font-weight:700;color:#fff;line-height:1.1}
+      .s-body{font-size:13px;color:rgba(255,255,255,.85);line-height:1.65}
+      .s-bottom{position:absolute;bottom:0;left:0;right:0;height:175px;display:flex;padding:20px 48px;gap:20px;align-items:center}
+      .s-mcard{flex:1;height:130px;border-radius:16px;padding:16px 22px;display:flex;flex-direction:column;justify-content:center;gap:6px}
+      .s-mcard-dark{background:rgba(55,40,80,.55);border:1px solid rgba(255,255,255,.08)}
+      .s-mcard-white{background:#fff;box-shadow:0 8px 32px rgba(0,0,0,.25)}
+      .s-mcard-lav{background:rgba(195,175,235,.28);border:1px solid rgba(195,175,235,.4)}
+      .s-mnum{font-size:36px;font-weight:700;line-height:1}
+      .s-mdesc{font-size:11px;line-height:1.4}
+      .s-mcard-dark .s-mnum,.s-mcard-dark .s-mdesc{color:rgba(220,210,240,.85)}
+      .s-mcard-white .s-mnum,.s-mcard-white .s-mdesc{color:#533583}
+      .s-mcard-lav .s-mnum,.s-mcard-lav .s-mdesc{color:#533583}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_WHITE}" crossorigin="anonymous">
+      <img class="s-ipad" src="${IMGS}ipad-b2b.png" crossorigin="anonymous">
+      <div class="s-right">
+        <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+        <p class="s-body" id="eb-body">${esc(d.body)}</p>
+      </div>
+      <div class="s-bottom">
+        <div class="s-mcard s-mcard-dark"><p class="s-mnum" id="eb-m1num">${esc(d.m1num)}</p><p class="s-mdesc" id="eb-m1desc">${esc(d.m1desc)}</p></div>
+        <div class="s-mcard s-mcard-white"><p class="s-mnum" id="eb-m2num">${esc(d.m2num)}</p><p class="s-mdesc" id="eb-m2desc">${esc(d.m2desc)}</p></div>
+        <div class="s-mcard s-mcard-lav"><p class="s-mnum" id="eb-m3num">${esc(d.m3num)}</p><p class="s-mdesc" id="eb-m3desc">${esc(d.m3desc)}</p></div>
+      </div>
+    `,
+  },
+
+
+  // F5. BITER GRANDE · FONDO BLANCO-MORADO
+  {
+    id:'biter-grande-fondo', name:'Biter grande · Fondo', desc:'Título blanco grande + biter derecha', group:'Con fondo degradado',
+    fileName:'biter-grande-fondo-enerbit.pptx',
+    fields:[
+      {section:'Contenido'},
+      {id:'title',label:'Título (blanco, grande)', type:'textarea', val:'Lorem ipsum dolor\nsit amet, consectetur\nadipiscing elit.'},
+      {id:'body', label:'Texto (morado)',           type:'textarea', val:'Nulla vel erat non magna bibendum bibendum. Vestibulum mattis lacus a molestie auctor. Morbi at ex hendrerit, vulputate mi non, mollis nibh. Donec elit arcu, iaculis non urna eu, molestie tempus quam.'},
+      {section:'Imagen'},
+      {id:'biter',label:'Biter', type:'image-pick', val:'biter_mujer_thumbsup.png'},
+    ],
+    css:`
+      #slide-container{background:url('${BGS}bg-blanco-morado.jpg') center/cover no-repeat}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
+      .s-content{position:absolute;left:80px;top:0;bottom:0;width:46%;display:flex;flex-direction:column;justify-content:center;gap:22px}
+      .s-title{font-size:38px;font-weight:700;color:#533583;line-height:1.15;white-space:pre-line}
+      .s-body{font-size:13px;color:#533583;line-height:1.65}
+      .s-biter{position:absolute;right:0;top:0;bottom:0;height:100%;object-fit:contain;object-position:right center}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_WHITE}" crossorigin="anonymous">
+      <div class="s-content">
+        <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+        <p class="s-body" id="eb-body">${esc(d.body)}</p>
+      </div>
+      <img id="eb-biter" class="s-biter" src="${IMGS}${d.biter}" crossorigin="anonymous">
+    `,
+  },
+
+  // F6. IPAD CON CARD · FONDO NARANJA-AMARILLO
+  {
+    id:'ipad-card-fondo', name:'iPad con card · Fondo naranja', desc:'Card de vidrio + iPad sobre naranja', group:'Con fondo degradado',
+    fileName:'ipad-card-fondo-enerbit.pptx',
+    fields:[
+      {section:'Contenido'},
+      {id:'title',label:'Título', type:'text',     val:'Lorem ipsum dolor'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Donec elit arcu, iaculis non urna eu, molestie tempus quam. Ut tempor efficitur pharetra. Donec lacinia nisl diam, eget lobortis elit vulputate eget.'},
+    ],
+    css:`
+      #slide-container{background:url('${BGS}bg-naranja-amarillo.jpg') center/cover no-repeat}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
+      .s-card{position:absolute;left:48px;top:50%;transform:translateY(-50%);width:320px;background:rgba(255,255,255,.88);border-radius:20px;padding:32px 36px;display:flex;flex-direction:column;gap:16px;border:1px solid rgba(255,255,255,.6)}
+      .s-title{font-size:20px;font-weight:700;color:#533583;line-height:1.3}
+      .s-body{font-size:12px;color:#533583;line-height:1.7}
+      .s-ipad{position:absolute;right:40px;top:50%;transform:translateY(-50%) rotate(6deg);height:88%;object-fit:contain}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
+      <div class="s-card">
+        <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+        <p class="s-body" id="eb-body">${esc(d.body)}</p>
+      </div>
+      <img class="s-ipad" src="${IMGS}ipad-b2b.png" crossorigin="anonymous">
+    `,
+  },
+
+  // F7. BITER CON CARD · FONDO MORADO CLARO
+  {
+    id:'biter-card-fondo', name:'Biter con card · Fondo morado', desc:'Card de vidrio + biter sobre morado claro', group:'Con fondo degradado',
+    fileName:'biter-card-fondo-enerbit.pptx',
+    fields:[
+      {section:'Contenido'},
+      {id:'title',label:'Título', type:'text',     val:'Lorem ipsum dolor'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Donec elit arcu, iaculis non urna eu, molestie tempus quam. Ut tempor efficitur pharetra. Donec lacinia nisl diam, eget lobortis elit vulputate eget.'},
+      {section:'Imagen'},
+      {id:'biter',label:'Biter', type:'image-pick', val:'biter_mujer_thumbsup.png'},
+    ],
+    css:`
+      #slide-container{background:url('${BGS}bg-morado-morado%20claro.jpg') center/cover no-repeat}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
+      .s-card{position:absolute;left:48px;top:50%;transform:translateY(-50%);width:400px;background:rgba(255,255,255,.78);border-radius:20px;padding:36px 40px;display:flex;flex-direction:column;gap:18px;border:1px solid rgba(255,255,255,.45)}
+      .s-title{font-size:22px;font-weight:700;color:#533583;line-height:1.3}
+      .s-body{font-size:13px;color:#533583;line-height:1.7}
+      .s-biter{position:absolute;right:0;top:0;bottom:0;height:100%;object-fit:contain;object-position:right center}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_WHITE}" crossorigin="anonymous">
+      <div class="s-card">
+        <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+        <p class="s-body" id="eb-body">${esc(d.body)}</p>
+      </div>
+      <img id="eb-biter" class="s-biter" src="${IMGS}${d.biter}" crossorigin="anonymous">
+    `,
+  },
+
 ]; // end TEMPLATES
+
+// ── Inject logo toggle into all templates ─────────────────────────────────────
+// biter-grande-fondo logo is hidden by default (bg is light on left, logo goes on dark right)
+TEMPLATES.forEach(t => {
+  const showByDefault = t.id !== 'biter-grande-fondo';
+  t.fields.unshift(
+    {section:'Opciones'},
+    {id:'logo', label:'Mostrar logo', type:'toggle', val:showByDefault}
+  );
+});
 
 // ── Repo images (loaded from GitHub API) ──────────────────────────────────────
 let repoImages = [
@@ -882,6 +1163,9 @@ function buildPanel(tpl) {
       html += `<div class="field"><label>${f.label}</label><input type="text" data-fid="${f.id}" value="${esc(val)}"></div>`;
     } else if (f.type === 'textarea') {
       html += `<div class="field"><label>${f.label}</label><textarea data-fid="${f.id}" rows="3">${esc(val)}</textarea></div>`;
+    } else if (f.type === 'toggle') {
+      const checked = (currentValues[f.id] ?? f.val) !== false;
+      html += `<div class="field field-toggle"><label>${f.label}</label><label class="toggle-switch"><input type="checkbox" data-fid="${f.id}"${checked?' checked':''}><span class="toggle-slider"></span></label></div>`;
     } else if (f.type === 'image-pick') {
       const thumbs = repoImages.length
         ? repoImages.map(img => `
@@ -904,10 +1188,20 @@ function buildPanel(tpl) {
 function renderSlide(tpl) {
   document.getElementById('tpl-css').textContent = tpl.css;
   document.getElementById('slide-container').innerHTML = tpl.render(currentValues);
+  // Apply logo visibility (toggle default may be false for some templates)
+  if (currentValues['logo'] === false) {
+    const logoEl = document.getElementById('slide-container').querySelector('.s-logo');
+    if (logoEl) logoEl.style.display = 'none';
+  }
 }
 
 // ── Update single field in preview ───────────────────────────────────────────
 function updateField(fieldId, val) {
+  if (fieldId === 'logo') {
+    const logoEl = document.getElementById('slide-container').querySelector('.s-logo');
+    if (logoEl) logoEl.style.display = val ? '' : 'none';
+    return;
+  }
   const el = document.getElementById('eb-' + fieldId);
   if (!el) return;
   if (el.tagName === 'IMG') el.src = IMGS + val;
@@ -1078,9 +1372,17 @@ async function exportDeck() {
 // ── Events ────────────────────────────────────────────────────────────────────
 document.getElementById('panel').addEventListener('input', e => {
   const fid = e.target.dataset.fid;
-  if (!fid) return;
+  if (!fid || e.target.type === 'checkbox') return;
   currentValues[fid] = e.target.value;
   updateField(fid, e.target.value);
+});
+
+document.getElementById('panel').addEventListener('change', e => {
+  if (e.target.type !== 'checkbox') return;
+  const fid = e.target.dataset.fid;
+  if (!fid) return;
+  currentValues[fid] = e.target.checked;
+  updateField(fid, e.target.checked);
 });
 
 document.getElementById('panel').addEventListener('click', e => {
@@ -1088,10 +1390,8 @@ document.getElementById('panel').addEventListener('click', e => {
   if (!thumb) return;
   const fid = thumb.dataset.fid;
   const val = thumb.dataset.val;
-  // Update selection visuals
   thumb.closest('.img-picker').querySelectorAll('.img-thumb').forEach(t => t.classList.remove('selected'));
   thumb.classList.add('selected');
-  // Update state and preview
   currentValues[fid] = val;
   updateField(fid, val);
 });
