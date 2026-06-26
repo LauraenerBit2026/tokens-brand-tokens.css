@@ -1353,6 +1353,10 @@ async function exportDeck() {
   await new Promise(r => setTimeout(r, 400));
 
   try {
+    document.querySelectorAll(selectors.join(',') + ' *').forEach(el => {
+      if (el.className && typeof el.className !== 'string')
+        el.setAttribute('class', el.className.baseVal || '');
+    });
     await domToPptx.exportToPptx(selectors, {
       fileName: 'deck-enerbit.pptx',
       autoEmbedFonts: true,
@@ -1401,6 +1405,10 @@ document.getElementById('export-slide-btn').addEventListener('click', async () =
   const btn = document.getElementById('export-slide-btn');
   btn.textContent = 'Generando...'; btn.disabled = true;
   try {
+    document.querySelectorAll('#slide-container *').forEach(el => {
+      if (el.className && typeof el.className !== 'string')
+        el.setAttribute('class', el.className.baseVal || '');
+    });
     await domToPptx.exportToPptx('#slide-container', {
       fileName: currentTpl.fileName, autoEmbedFonts: true,
     });
