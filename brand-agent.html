@@ -460,13 +460,13 @@ const TEMPLATES = [
     fileName:'tres-columnas-enerbit.pptx',
     fields:[
       {section:'Encabezado'},
-      {id:'title',   label:'Título',    type:'text',     val:'Beneficios de elegir enerBit'},
-      {id:'subtitle',label:'Subtítulo', type:'textarea', val:'Todo lo que necesitas para gestionar tu energía.'},
+      {id:'title',   label:'Título',    type:'text',     val:'Título principal'},
+      {id:'subtitle',label:'Subtítulo', type:'textarea', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
       ...[1,2,3].flatMap(i=>[
         {section:`Tarjeta ${i}`},
-        {id:`c${i}title`,label:'Título',   type:'text',     val:['Ahorro garantizado','Instalación sin complicaciones','Soporte siempre disponible'][i-1]},
-        {id:`c${i}label`,label:'Etiqueta', type:'text',     val:`Beneficio ${i}`},
-        {id:`c${i}body`, label:'Texto',    type:'textarea', val:['Reducimos tu factura de energía desde el primer mes, sin costos ocultos.','Nuestro equipo se encarga de todo el proceso, sin papeleo ni cortes.','Atención personalizada por WhatsApp, teléfono o correo cuando la necesites.'][i-1]},
+        {id:`c${i}title`,label:'Título',   type:'text',     val:`Título ${i}`},
+        {id:`c${i}label`,label:'Etiqueta', type:'text',     val:`Etiqueta ${i}`},
+        {id:`c${i}body`, label:'Texto',    type:'textarea', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam dignissim ut nibh eu ornare.'},
       ]),
     ],
     css:`
@@ -862,7 +862,7 @@ const TEMPLATES = [
       .s-card-body{font-size:12px;color:#533583;line-height:1.6}
     `,
     render:(d)=>`
-      <img class="s-logo" src="${LOGO_WHITE}" crossorigin="anonymous">
+      <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
       <div class="s-header">
         <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
         <p class="s-subtitle" id="eb-subtitle">${esc(d.subtitle)}</p>
@@ -1018,13 +1018,13 @@ const TEMPLATES = [
     css:`
       #slide-container{background:url('${BGS}bg-blanco-morado.jpg') center/cover no-repeat}
       .s-logo{position:absolute;top:24px;right:32px;width:90px}
-      .s-content{position:absolute;left:80px;top:0;bottom:0;width:46%;display:flex;flex-direction:column;justify-content:center;gap:22px}
+      .s-content{position:absolute;left:80px;top:0;bottom:0;width:46%;display:flex;flex-direction:column;justify-content:flex-start;padding-top:80px;gap:22px}
       .s-title{font-size:38px;font-weight:700;color:#533583;line-height:1.15;white-space:pre-line}
       .s-body{font-size:13px;color:#533583;line-height:1.65}
       .s-biter{position:absolute;right:0;top:0;bottom:0;height:100%;object-fit:contain;object-position:right center}
     `,
     render:(d)=>`
-      <img class="s-logo" src="${LOGO_WHITE}" crossorigin="anonymous">
+      <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
       <div class="s-content">
         <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
         <p class="s-body" id="eb-body">${esc(d.body)}</p>
