@@ -421,11 +421,11 @@ const TEMPLATES = [
     fileName:'cierre-contacto-enerbit.pptx',
     fields:[],
     css:`
-      #slide-container{background:#fff;padding:0}
-      .s-static{width:100%;height:100%;object-fit:cover;display:block}
+      #slide-container{background:#fff;padding:0;overflow:hidden}
+      .s-static{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
     `,
     render:()=>`
-      <img class="s-static" src="${STATIC}bg-cierre%201.jpg" crossorigin="anonymous">
+      <img class="s-static" src="${STATIC}bg-cierre1.jpg" crossorigin="anonymous">
     `,
   },
 
@@ -435,11 +435,11 @@ const TEMPLATES = [
     fileName:'cierre-redes-enerbit.pptx',
     fields:[],
     css:`
-      #slide-container{background:#533583;padding:0}
-      .s-static{width:100%;height:100%;object-fit:cover;display:block}
+      #slide-container{background:#533583;padding:0;overflow:hidden}
+      .s-static{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
     `,
     render:()=>`
-      <img class="s-static" src="${STATIC}bg-cierre%202.jpg" crossorigin="anonymous">
+      <img class="s-static" src="${STATIC}bg-cierre2.jpg" crossorigin="anonymous">
     `,
   },
 
@@ -449,8 +449,8 @@ const TEMPLATES = [
     fileName:'preguntas-enerbit.pptx',
     fields:[],
     css:`
-      #slide-container{background:#fff;padding:0}
-      .s-static{width:100%;height:100%;object-fit:cover;display:block}
+      #slide-container{background:#fff;padding:0;overflow:hidden}
+      .s-static{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
     `,
     render:()=>`
       <img class="s-static" src="${STATIC}bg-preguntas.jpg" crossorigin="anonymous">
