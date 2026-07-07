@@ -266,8 +266,9 @@
 <script>
 // ── Constants ───────────────────────────────────────────────────────
 const CDN   = 'https://cdn.jsdelivr.net/gh/LauraenerBit2026/tokens-brand-tokens.css@main';
-const IMGS  = CDN + '/images/';
-const LOGOS = CDN + '/logos/';
+const IMGS   = CDN + '/images/';
+const LOGOS  = CDN + '/logos/';
+const STATIC = CDN + '/static/';
 const BGS   = CDN + '/backgrounds/';
 const LOGO_COLOR = `${LOGOS}logo-color.svg`;
 const LOGO_WHITE = `${LOGOS}logo-white.svg`;
@@ -416,41 +417,43 @@ const TEMPLATES = [
 
   // 4. CIERRE
   {
-    id:'cierre', name:'Cierre / Contacto', desc:'Slide de cierre con biter', group:'Apertura y cierre',
-    fileName:'cierre-enerbit.pptx',
-    fields:[
-      {section:'Textos'},
-      {id:'title',   label:'Título principal',   type:'textarea', val:'¡Ponerte en contacto con\nnosotros es muy fácil!'},
-      {id:'phone',   label:'Número de WhatsApp', type:'text',     val:'310 211 8496'},
-      {id:'pqr',     label:'Texto PQR',          type:'textarea', val:'Para generar una PQR ingresa a\nwww.enerbit.co/pqr/'},
-      {id:'tagline', label:'Tagline',             type:'textarea', val:'Estamos aquí\npara atenderte'},
-      {section:'Imagen'},
-      {id:'biter',   label:'Biter',              type:'image-pick',    val:'biter_mujer_celular.png'},
-    ],
+    id:'cierre-contacto', name:'Cierre · Contacto', desc:'Slide de cierre con info de contacto', group:'Apertura y cierre',
+    fileName:'cierre-contacto-enerbit.pptx',
+    fields:[],
     css:`
-      #slide-container{background:#fff}
-      .s-logo{position:absolute;top:24px;right:32px;width:90px}
-      .s-content{position:absolute;left:0;right:0;top:0;bottom:0;width:420px;margin:auto 0;padding-left:80px;display:flex;flex-direction:column;justify-content:center;gap:24px}
-      .s-title{font-size:22px;font-weight:700;color:#533583;line-height:1.3;white-space:pre-line}
-      .s-wa-row{display:flex;align-items:center;gap:12px}
-      .s-wa-icon svg{width:36px;height:36px}
-      .s-phone{font-size:28px;font-weight:700;color:#533583}
-      .s-pqr{font-size:15px;color:#FF7C02;line-height:1.4;white-space:pre-line}
-      .s-tagline{font-size:16px;color:#533583;line-height:1.4;white-space:pre-line}
-      .s-biter{position:absolute;right:80px;bottom:0;height:95%;object-fit:contain;object-position:bottom right}
+      #slide-container{background:#fff;padding:0}
+      .s-static{width:100%;height:100%;object-fit:cover;display:block}
     `,
-    render:(d)=>`
-      <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
-      <div class="s-content">
-        <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
-        <div class="s-wa-row">
-          <div class="s-wa-icon"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="18" fill="#25D366"/><path d="M26.3 9.7A11.7 11.7 0 0 0 18 6.3C11.6 6.3 6.3 11.6 6.3 18c0 2 .5 4 1.5 5.7L6 30l6.4-1.7A11.7 11.7 0 0 0 18 29.7c6.4 0 11.7-5.3 11.7-11.7 0-3.1-1.2-6-3.4-8.3zm-8.3 18A9.7 9.7 0 0 1 13 26.3l-.4-.2-3.8 1 1-3.7-.2-.4A9.7 9.7 0 0 1 8.3 18 9.7 9.7 0 0 1 18 8.3 9.7 9.7 0 0 1 27.7 18 9.7 9.7 0 0 1 18 27.7zm5.3-7.3c-.3-.1-1.7-.9-2-.9-.2-.1-.4-.1-.6.1-.2.2-.7.9-.9 1-.1.2-.3.2-.5.1-.3-.1-1.2-.4-2.2-1.4-.8-.7-1.4-1.6-1.5-1.9-.2-.3 0-.4.1-.6l.4-.5.2-.4v-.4l-.9-2.1c-.2-.5-.5-.5-.6-.5h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.1 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.6.2-1.2.1-1.3-.1-.1-.2-.2-.5-.3z" fill="white"/></svg></div>
-          <p class="s-phone" id="eb-phone">${esc(d.phone)}</p>
-        </div>
-        <p class="s-pqr" id="eb-pqr">${esc(d.pqr)}</p>
-        <p class="s-tagline" id="eb-tagline">${esc(d.tagline)}</p>
-      </div>
-      <img id="eb-biter" class="s-biter" src="${IMGS}${d.biter}" crossorigin="anonymous">
+    render:()=>`
+      <img class="s-static" src="${STATIC}bg-cierre%201.jpg" crossorigin="anonymous">
+    `,
+  },
+
+  // 4B. CIERRE REDES
+  {
+    id:'cierre-redes', name:'Cierre · Redes sociales', desc:'Slide de cierre con redes y QR', group:'Apertura y cierre',
+    fileName:'cierre-redes-enerbit.pptx',
+    fields:[],
+    css:`
+      #slide-container{background:#533583;padding:0}
+      .s-static{width:100%;height:100%;object-fit:cover;display:block}
+    `,
+    render:()=>`
+      <img class="s-static" src="${STATIC}bg-cierre%202.jpg" crossorigin="anonymous">
+    `,
+  },
+
+  // 4C. PREGUNTAS
+  {
+    id:'preguntas', name:'Preguntas', desc:'Slide de preguntas y respuestas', group:'Apertura y cierre',
+    fileName:'preguntas-enerbit.pptx',
+    fields:[],
+    css:`
+      #slide-container{background:#fff;padding:0}
+      .s-static{width:100%;height:100%;object-fit:cover;display:block}
+    `,
+    render:()=>`
+      <img class="s-static" src="${STATIC}bg-preguntas.jpg" crossorigin="anonymous">
     `,
   },
 
@@ -718,6 +721,7 @@ const TEMPLATES = [
     ],
     css:`
       #slide-container{background:#fff;display:flex;align-items:stretch;padding:48px;gap:32px}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
       .s-left{width:280px;flex-shrink:0;display:flex;flex-direction:column;justify-content:space-between}
       .s-left-top{display:flex;flex-direction:column;gap:12px}
       .s-main-title{font-size:32px;font-weight:700;color:#533583;line-height:1.1}
@@ -736,6 +740,7 @@ const TEMPLATES = [
       .s-cnum{font-size:36px;font-weight:700;color:#fff;line-height:1}
     `,
     render:(d)=>`
+      <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
       <div class="s-left">
         <div class="s-left-top">
           <h2 class="s-main-title" id="eb-title">${esc(d.title)}</h2>
