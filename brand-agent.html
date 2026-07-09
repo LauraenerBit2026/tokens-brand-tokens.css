@@ -150,7 +150,14 @@
       background: #DCDCDC; overflow: hidden; position: relative;
     }
     .preview-empty { color: #aaa; font-size: 13px; text-align: center; }
-    #slide-scaler { transform-origin: center center; }
+    #slide-scaler {
+      transform-origin: center center;
+      will-change: transform;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+    .s-static { image-rendering: -webkit-optimize-contrast; image-rendering: high-quality; }
 
     /* ── Add to deck button (inside panel) ── */
     .add-deck-btn {
@@ -179,6 +186,8 @@
     .img-thumb img { width: 100%; height: 44px; object-fit: contain; border-radius: 3px; }
     .img-thumb span { font-size: 8px; color: #999; text-align: center; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; }
     .img-loading { font-size: 10px; color: #aaa; text-align: center; padding: 12px 0; }
+    .img-hint { font-size: 10px; color: #FF7C02; font-weight: 600; margin-bottom: 6px; background: #fff4eb; border-radius: 6px; padding: 5px 8px; text-align: center; }
+    .picker-sub-label { font-size: 9px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
 
     /* ── Toggle switch ── */
     .field-toggle { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -290,18 +299,129 @@ const TEMPLATES = [
 
   // 1. PORTADA
   {
-    id:'portada', name:'Portada', desc:'Slide de apertura', group:'Apertura y cierre',
+    id:'portada', name:'Portada', desc:'Slide de apertura', group:'Portadas',
     fileName:'portada-enerbit.pptx',
     fields:[
       {section:'Encabezado'},
       {id:'label',   label:'Etiqueta (texto pequeño)', type:'text',     val:'Presentación'},
       {section:'Título'},
-      {id:'title1',  label:'Línea 1 (blanco)',          type:'text',     val:'Título de la'},
-      {id:'title2',  label:'Línea 2 (naranja)',         type:'text',     val:'presentación'},
+      {id:'title1',  label:'Línea 1 (blanco)',          type:'text',     val:'La energía que tu empresa'},
+      {id:'title2',  label:'Línea 2 (naranja)',         type:'text',     val:'merece tener'},
       {section:'Subtítulo'},
-      {id:'subtitle',label:'Descripción',               type:'textarea', val:'Subtítulo o descripción breve de lo que trata esta presentación.'},
+      {id:'subtitle',label:'Descripción',               type:'textarea', val:'enerBit es energía 100% digital — medidor inteligente, app y atención 24/7.'},
       {section:'Imagen'},
       {id:'biter',   label:'Biter',                    type:'image-pick',    val:'biter_mujer_thumbsup.png'},
+    ],
+    css:`
+      #slide-container{background:#533583}
+      #slide-container::before{content:'';position:absolute;top:-100px;right:-100px;width:350px;height:350px;background:radial-gradient(circle,rgba(105,65,198,.5) 0%,transparent 70%);pointer-events:none}
+      .s-logo{position:absolute;top:28px;right:36px;width:110px}
+      .s-content{position:absolute;left:48px;bottom:70px;max-width:430px}
+      .s-label{font-size:12px;font-weight:600;color:rgba(255,255,255,.55);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+      .s-title{font-size:44px;font-weight:700;color:#fff;line-height:1.08;margin-bottom:16px}
+      .s-title .orng{color:#FF7C02}
+      .s-subtitle{font-size:14px;font-weight:400;color:rgba(255,255,255,.7);line-height:1.5;max-width:320px}
+      .s-biter{position:absolute;right:0;bottom:0;height:92%;object-fit:contain;object-position:bottom right}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_WHITE}" crossorigin="anonymous">
+      <div class="s-content">
+        <p class="s-label" id="eb-label">${esc(d.label)}</p>
+        <h1 class="s-title"><span id="eb-title1">${esc(d.title1)}</span><br><span class="orng" id="eb-title2">${esc(d.title2)}</span></h1>
+        <p class="s-subtitle" id="eb-subtitle">${esc(d.subtitle)}</p>
+      </div>
+      <img id="eb-biter" class="s-biter" src="${IMGS}${d.biter}" crossorigin="anonymous">
+    `,
+  },
+
+  // 1B. PORTADA B2B
+  {
+    id:'portada-b2b', name:'Portada B2B', desc:'Apertura para empresas', group:'Portadas',
+    fileName:'portada-b2b-enerbit.pptx',
+    fields:[
+      {section:'Encabezado'},
+      {id:'label',   label:'Etiqueta (texto pequeño)', type:'text',     val:'Propuesta comercial'},
+      {section:'Título'},
+      {id:'title1',  label:'Línea 1 (blanco)',          type:'text',     val:'Energía inteligente'},
+      {id:'title2',  label:'Línea 2 (naranja)',         type:'text',     val:'para tu empresa'},
+      {section:'Subtítulo'},
+      {id:'subtitle',label:'Descripción',               type:'textarea', val:'Medidor inteligente, visibilidad en tiempo real y soporte 24/7 para optimizar tu consumo energético.'},
+      {section:'Imagen'},
+      {id:'biter',   label:'Biter',                    type:'image-pick', val:'biter_hombre_thumbsup.png'},
+    ],
+    css:`
+      #slide-container{background:#533583}
+      #slide-container::before{content:'';position:absolute;top:-100px;right:-100px;width:350px;height:350px;background:radial-gradient(circle,rgba(105,65,198,.5) 0%,transparent 70%);pointer-events:none}
+      .s-logo{position:absolute;top:28px;right:36px;width:110px}
+      .s-content{position:absolute;left:48px;bottom:70px;max-width:430px}
+      .s-label{font-size:12px;font-weight:600;color:rgba(255,255,255,.55);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+      .s-title{font-size:44px;font-weight:700;color:#fff;line-height:1.08;margin-bottom:16px}
+      .s-title .orng{color:#FF7C02}
+      .s-subtitle{font-size:14px;font-weight:400;color:rgba(255,255,255,.7);line-height:1.5;max-width:320px}
+      .s-biter{position:absolute;right:0;bottom:0;height:92%;object-fit:contain;object-position:bottom right}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_WHITE}" crossorigin="anonymous">
+      <div class="s-content">
+        <p class="s-label" id="eb-label">${esc(d.label)}</p>
+        <h1 class="s-title"><span id="eb-title1">${esc(d.title1)}</span><br><span class="orng" id="eb-title2">${esc(d.title2)}</span></h1>
+        <p class="s-subtitle" id="eb-subtitle">${esc(d.subtitle)}</p>
+      </div>
+      <img id="eb-biter" class="s-biter" src="${IMGS}${d.biter}" crossorigin="anonymous">
+    `,
+  },
+
+  // 1C. PORTADA B2C
+  {
+    id:'portada-b2c', name:'Portada B2C', desc:'Apertura para usuarios residenciales', group:'Portadas',
+    fileName:'portada-b2c-enerbit.pptx',
+    fields:[
+      {section:'Encabezado'},
+      {id:'label',   label:'Etiqueta (texto pequeño)', type:'text',     val:'Presentación'},
+      {section:'Título'},
+      {id:'title1',  label:'Línea 1 (blanco)',          type:'text',     val:'La energía que'},
+      {id:'title2',  label:'Línea 2 (naranja)',         type:'text',     val:'mereces tener'},
+      {section:'Subtítulo'},
+      {id:'subtitle',label:'Descripción',               type:'textarea', val:'Con enerBit tienes control total de tu energía: app, medidor inteligente y atención humana 24/7.'},
+      {section:'Imagen'},
+      {id:'biter',   label:'Biter',                    type:'image-pick', val:'biter_mujer_thumbsup.png'},
+    ],
+    css:`
+      #slide-container{background:#533583}
+      #slide-container::before{content:'';position:absolute;top:-100px;right:-100px;width:350px;height:350px;background:radial-gradient(circle,rgba(105,65,198,.5) 0%,transparent 70%);pointer-events:none}
+      .s-logo{position:absolute;top:28px;right:36px;width:110px}
+      .s-content{position:absolute;left:48px;bottom:70px;max-width:430px}
+      .s-label{font-size:12px;font-weight:600;color:rgba(255,255,255,.55);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+      .s-title{font-size:44px;font-weight:700;color:#fff;line-height:1.08;margin-bottom:16px}
+      .s-title .orng{color:#FF7C02}
+      .s-subtitle{font-size:14px;font-weight:400;color:rgba(255,255,255,.7);line-height:1.5;max-width:320px}
+      .s-biter{position:absolute;right:0;bottom:0;height:92%;object-fit:contain;object-position:bottom right}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_WHITE}" crossorigin="anonymous">
+      <div class="s-content">
+        <p class="s-label" id="eb-label">${esc(d.label)}</p>
+        <h1 class="s-title"><span id="eb-title1">${esc(d.title1)}</span><br><span class="orng" id="eb-title2">${esc(d.title2)}</span></h1>
+        <p class="s-subtitle" id="eb-subtitle">${esc(d.subtitle)}</p>
+      </div>
+      <img id="eb-biter" class="s-biter" src="${IMGS}${d.biter}" crossorigin="anonymous">
+    `,
+  },
+
+  // 1D. PORTADA CONSTRUCTORAS
+  {
+    id:'portada-constructoras', name:'Portada Constructoras', desc:'Apertura para proyectos inmobiliarios', group:'Portadas',
+    fileName:'portada-constructoras-enerbit.pptx',
+    fields:[
+      {section:'Encabezado'},
+      {id:'label',   label:'Etiqueta (texto pequeño)', type:'text',     val:'Propuesta constructoras'},
+      {section:'Título'},
+      {id:'title1',  label:'Línea 1 (blanco)',          type:'text',     val:'Valoriza tus proyectos'},
+      {id:'title2',  label:'Línea 2 (naranja)',         type:'text',     val:'con enerBit'},
+      {section:'Subtítulo'},
+      {id:'subtitle',label:'Descripción',               type:'textarea', val:'Integra enerBit desde el diseño y ofrece a tus compradores la mejor experiencia energética de Colombia.'},
+      {section:'Imagen'},
+      {id:'biter',   label:'Biter',                    type:'image-pick', val:'biter_mujer_celular.png'},
     ],
     css:`
       #slide-container{background:#533583}
@@ -331,14 +451,14 @@ const TEMPLATES = [
     fileName:'contenido-enerbit.pptx',
     fields:[
       {section:'Encabezado'},
-      {id:'label', label:'Etiqueta', type:'text', val:'Sección'},
-      {id:'title', label:'Título del slide', type:'text', val:'Título del slide de contenido'},
+      {id:'label', label:'Etiqueta', type:'text', val:'Nuestra propuesta'},
+      {id:'title', label:'Título del slide', type:'text', val:'Energía que puedes ver y controlar'},
       {section:'Columna 1'},
-      {id:'c1title',label:'Título',      type:'text',     val:'Primer punto clave'},
-      {id:'c1body', label:'Descripción', type:'textarea', val:'Descripción del primer punto. Aquí va el texto explicativo con el detalle que necesita la audiencia.'},
+      {id:'c1title',label:'Título',      type:'text',     val:'Sin más facturas sorpresa'},
+      {id:'c1body', label:'Descripción', type:'textarea', val:'Con enerBit ves tu consumo hora a hora en la app. Sabes exactamente cuánto gastas y cuándo.'},
       {section:'Columna 2'},
-      {id:'c2title',label:'Título',      type:'text',     val:'Segundo punto clave'},
-      {id:'c2body', label:'Descripción', type:'textarea', val:'Descripción del segundo punto. Mantén los textos cortos y directos.'},
+      {id:'c2title',label:'Título',      type:'text',     val:'Instalación en 22 minutos'},
+      {id:'c2body', label:'Descripción', type:'textarea', val:'Sin obras, sin papeleo y sin cortes. Nuestro equipo se encarga de todo.'},
     ],
     css:`
       #slide-container{background:#fff;display:flex;flex-direction:column;justify-content:center;gap:24px;padding:64px 48px}
@@ -384,23 +504,23 @@ const TEMPLATES = [
     fileName:'metricas-enerbit.pptx',
     fields:[
       {section:'Encabezado'},
-      {id:'title',   label:'Título',    type:'text',     val:'Título'},
-      {id:'subtitle',label:'Subtítulo', type:'textarea', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+      {id:'title',   label:'Título',    type:'text',     val:'Paso clave'},
+      {id:'subtitle',label:'Subtítulo', type:'textarea', val:'Resultados que hablan por sí solos.'},
       ...[1,2,3,4,5,6].flatMap(i=>[
         {section:`Métrica ${i}`},
         {id:`m${i}num`, label:'Número',      type:'text', val:i<=2?'+00.000':i===3?'0X':i<=5?'0%':'x países'},
-        {id:`m${i}desc`,label:'Descripción', type:'text', val:'Lorem ipsum dolor sit amet consectetur.'},
+        {id:`m${i}desc`,label:'Descripción', type:'text', val:'Dato clave de enerBit en Colombia.'},
       ]),
     ],
     css:`
-      #slide-container{background:#fff;padding:48px;display:flex;flex-direction:column;gap:20px}
+      #slide-container{background:#fff;padding:48px;display:flex;flex-direction:column;justify-content:center;gap:20px}
       .s-logo{position:absolute;top:24px;right:32px;width:90px}
       .s-header{display:flex;flex-direction:column;gap:4px}
       .s-title{font-size:24px;font-weight:700;color:#533583}
       .s-subtitle{font-size:13px;color:#666}
-      .s-grid{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:12px;flex:1}
-      .s-card{background:#F4EBFF;border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:6px}
-      .s-num{font-size:36px;font-weight:700;color:#533583;line-height:1;letter-spacing:-.01em}
+      .s-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+      .s-card{background:#F4EBFF;border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:6px}
+      .s-num{font-size:32px;font-weight:700;color:#533583;line-height:1;letter-spacing:-.01em}
       .s-desc{font-size:11px;color:#666;line-height:1.4}
     `,
     render:(d)=>`
@@ -417,7 +537,7 @@ const TEMPLATES = [
 
   // 4. CIERRE
   {
-    id:'cierre-contacto', name:'Cierre · Contacto', desc:'Slide de cierre con info de contacto', group:'Apertura y cierre',
+    id:'cierre-contacto', name:'Cierre · Contacto', desc:'Slide de cierre con info de contacto', group:'Cierres',
     fileName:'cierre-contacto-enerbit.pptx',
     fields:[],
     css:`
@@ -425,13 +545,13 @@ const TEMPLATES = [
       .s-static{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
     `,
     render:()=>`
-      <img class="s-static" src="${STATIC}bg-cierre1.jpg" crossorigin="anonymous">
+      <img class="s-static" src="${STATIC}bg_contactanos.jpg" crossorigin="anonymous">
     `,
   },
 
   // 4B. CIERRE REDES
   {
-    id:'cierre-redes', name:'Cierre · Redes sociales', desc:'Slide de cierre con redes y QR', group:'Apertura y cierre',
+    id:'cierre-redes', name:'Cierre · Redes sociales', desc:'Slide de cierre con redes y QR', group:'Cierres',
     fileName:'cierre-redes-enerbit.pptx',
     fields:[],
     css:`
@@ -439,13 +559,41 @@ const TEMPLATES = [
       .s-static{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
     `,
     render:()=>`
-      <img class="s-static" src="${STATIC}bg-cierre2.jpg" crossorigin="anonymous">
+      <img class="s-static" src="${STATIC}bg_siguenos.jpg" crossorigin="anonymous">
     `,
   },
 
-  // 4C. PREGUNTAS
+  // 4C. MEDIDOR
   {
-    id:'preguntas', name:'Preguntas', desc:'Slide de preguntas y respuestas', group:'Apertura y cierre',
+    id:'medidor', name:'Beneficios medidor', desc:'Slide estático medición inteligente', group:'Estáticas',
+    fileName:'medidor-enerbit.pptx',
+    fields:[],
+    css:`
+      #slide-container{background:#533583;padding:0;overflow:hidden}
+      .s-static{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
+    `,
+    render:()=>`
+      <img class="s-static" src="${STATIC}bg-medidor.jpg" crossorigin="anonymous">
+    `,
+  },
+
+  // 4C2. MAPA
+  {
+    id:'mapa', name:'Mapa cobertura', desc:'Slide estático mapa de cobertura', group:'Estáticas',
+    fileName:'mapa-enerbit.pptx',
+    fields:[],
+    css:`
+      #slide-container{background:#fff;padding:0;overflow:hidden}
+      .s-static{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
+    `,
+    render:()=>`
+      <img class="s-static" src="${STATIC}bg-mapa.jpg" crossorigin="anonymous">
+    `,
+  },
+
+  // 4D. PREGUNTAS
+  {
+    id:'preguntas', name:'Preguntas', desc:'Slide de preguntas y respuestas', group:'Estáticas',
     fileName:'preguntas-enerbit.pptx',
     fields:[],
     css:`
@@ -453,7 +601,7 @@ const TEMPLATES = [
       .s-static{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block}
     `,
     render:()=>`
-      <img class="s-static" src="${STATIC}bg-preguntas.jpg" crossorigin="anonymous">
+      <img class="s-static" src="${STATIC}bg_preguntas.jpg" crossorigin="anonymous">
     `,
   },
 
@@ -463,13 +611,12 @@ const TEMPLATES = [
     fileName:'tres-columnas-enerbit.pptx',
     fields:[
       {section:'Encabezado'},
-      {id:'title',   label:'Título',    type:'text',     val:'Título principal'},
-      {id:'subtitle',label:'Subtítulo', type:'textarea', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+      {id:'title',   label:'Título',    type:'text',     val:'Tres razones para elegir enerBit'},
+      {id:'subtitle',label:'Subtítulo', type:'textarea', val:'Así funciona enerBit paso a paso'},
       ...[1,2,3].flatMap(i=>[
         {section:`Tarjeta ${i}`},
-        {id:`c${i}title`,label:'Título',   type:'text',     val:`Título ${i}`},
-        {id:`c${i}label`,label:'Etiqueta', type:'text',     val:`Etiqueta ${i}`},
-        {id:`c${i}body`, label:'Texto',    type:'textarea', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam dignissim ut nibh eu ornare.'},
+        {id:`c${i}title`,label:'Título', type:'text',     val:['Control total','Ahorro real','Soporte humano'][i-1]},
+        {id:`c${i}body`, label:'Texto',  type:'textarea', val:'Explica aquí en 2 líneas el beneficio de esta tarjeta para tu audiencia.'},
       ]),
     ],
     css:`
@@ -481,7 +628,6 @@ const TEMPLATES = [
       .s-cards{display:flex;gap:16px;height:220px}
       .s-card{flex:1;background:rgba(83,53,131,.06);border:1.5px solid rgba(83,53,131,.2);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px}
       .s-card-title{font-size:13px;font-weight:700;color:#533583}
-      .s-card-label{font-size:11px;color:#666}
       .s-card-body{font-size:12px;color:#533583;line-height:1.6}
     `,
     render:(d)=>`
@@ -491,19 +637,21 @@ const TEMPLATES = [
         <p class="s-subtitle" id="eb-subtitle">${esc(d.subtitle)}</p>
       </div>
       <div class="s-cards">
-        ${[1,2,3].map(i=>`<div class="s-card"><div><p class="s-card-title" id="eb-c${i}title">${esc(d['c'+i+'title'])}</p><p class="s-card-label" id="eb-c${i}label">${esc(d['c'+i+'label'])}</p></div><p class="s-card-body" id="eb-c${i}body">${esc(d['c'+i+'body'])}</p></div>`).join('')}
+        ${[1,2,3].map(i=>`<div class="s-card"><p class="s-card-title" id="eb-c${i}title">${esc(d['c'+i+'title'])}</p><p class="s-card-body" id="eb-c${i}body">${esc(d['c'+i+'body'])}</p></div>`).join('')}
       </div>
     `,
   },
 
   // 6. MOCKUP MORADO
   {
-    id:'mockup', name:'Mockup morado', desc:'Fondo morado con celular', group:'Contenido',
+    id:'mockup', name:'Mockup morado', desc:'Fondo morado con celular', group:'Simples',
     fileName:'mockup-enerbit.pptx',
     fields:[
       {section:'Contenido'},
       {id:'title',label:'Título', type:'text',     val:'Título'},
-      {id:'body', label:'Texto',  type:'textarea', val:'Nullam dignissim ut nibh eu ornare. Curabitur libero enim, ultricies vitae pellentesque vitae.'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Gestiona tu energía desde la app: consumo hora a hora, pagos y soporte 24/7 en un solo lugar.'},
+      {section:'Mockup'},
+      {id:'mockup',label:'Imagen del celular',type:'mockup-pick',val:'Consumos2.png',options:['Consumos2.png','Lobby-pagos-pendientes2.png','Lobby-pagos-al-dia2.png','Detalle-de-energia2.png']},
     ],
     css:`
       #slide-container{background:#533583}
@@ -512,7 +660,7 @@ const TEMPLATES = [
       .s-content{position:absolute;left:64px;top:0;bottom:0;width:380px;display:flex;flex-direction:column;justify-content:center;gap:16px}
       .s-title{font-size:44px;font-weight:700;color:#fff;line-height:1.1}
       .s-body{font-size:13px;color:rgba(255,255,255,.8);line-height:1.65}
-      .s-mockup{position:absolute;right:120px;top:50%;transform:translateY(-50%);height:88%;object-fit:contain}
+      .s-mockup{position:absolute;right:-30px;top:54%;transform:translateY(-50%);height:88%;object-fit:contain}
     `,
     render:(d)=>`
       <img class="s-logo" src="${LOGO_WHITE}" crossorigin="anonymous">
@@ -520,7 +668,7 @@ const TEMPLATES = [
         <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
         <p class="s-body" id="eb-body">${esc(d.body)}</p>
       </div>
-      <img class="s-mockup" src="${IMGS}MOCKUP-CELULAR.png" crossorigin="anonymous">
+      <img id="eb-mockup" class="s-mockup" src="${CDN}/mockups/${d.mockup}" crossorigin="anonymous">
     `,
   },
 
@@ -530,15 +678,15 @@ const TEMPLATES = [
     fileName:'dos-columnas-lista-enerbit.pptx',
     fields:[
       {section:'Columna izquierda'},
-      {id:'title',  label:'Título',    type:'textarea', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
-      {id:'body',   label:'Texto',     type:'textarea', val:'Nulla vel erat non magna bibendum bibendum. Vestibulum mattis lacus a molestie auctor.'},
+      {id:'title',  label:'Título',    type:'textarea', val:'Describe aquí el paso o acción en una oración clara.'},
+      {id:'body',   label:'Texto',     type:'textarea', val:'Tres pasos simples para tener control total de tu energía.'},
       {section:'Cabecera derecha'},
-      {id:'rtitle', label:'Título',    type:'text',     val:'Tres capas, un solo objetivo'},
-      {id:'rsub',   label:'Subtítulo', type:'text',     val:'Control total de la operación.'},
+      {id:'rtitle', label:'Título',    type:'text',     val:'El proceso de inicio'},
+      {id:'rsub',   label:'Subtítulo', type:'text',     val:'Rápido, digital y sin complicaciones.'},
       ...[1,2,3].flatMap(i=>[
         {section:`Tarjeta ${i}`},
         {id:`l${i}title`,label:'Título', type:'text', val:'Título'},
-        {id:`l${i}body`, label:'Texto',  type:'text', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+        {id:`l${i}body`, label:'Texto',  type:'text', val:'Agrega el título o punto clave aquí'},
       ]),
     ],
     css:`
@@ -575,12 +723,12 @@ const TEMPLATES = [
     fileName:'grid-morado-enerbit.pptx',
     fields:[
       {section:'Encabezado'},
-      {id:'title',label:'Título', type:'text',     val:'Nulla vel erat non magna'},
-      {id:'body', label:'Texto',  type:'textarea', val:'Morbi at ex hendrerit, vulputate mi non, mollis nibh. Donec elit arcu, iaculis non urna eu.'},
+      {id:'title',label:'Título', type:'text',     val:'Beneficio o dato de enerBit'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Comparte aquí un insight, dato o característica clave de enerBit para esta audiencia.'},
       ...[1,2,3,4,5,6].flatMap(i=>[
         {section:`Tarjeta ${i}`},
         {id:`c${i}title`,label:'Título', type:'text', val:'Nulla vel erat non magna'},
-        {id:`c${i}body`, label:'Texto',  type:'text', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+        {id:`c${i}body`, label:'Texto',  type:'text', val:'Describe en 1-2 oraciones este punto de valor para la audiencia.'},
       ]),
     ],
     css:`
@@ -612,11 +760,11 @@ const TEMPLATES = [
     fileName:'grid-4col-enerbit.pptx',
     fields:[
       {section:'Encabezado'},
-      {id:'title',label:'Título', type:'text', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
+      {id:'title',label:'Título', type:'text', val:'Agrega el título o punto clave aquí'},
       ...[1,2,3,4,5,6,7,8].flatMap(i=>[
         {section:`Tarjeta ${i}`},
-        {id:`c${i}title`,label:'Título', type:'text', val:'Lorem ipsum dolor sit amet'},
-        {id:`c${i}body`, label:'Texto',  type:'text', val:'Suspendisse potenti. Vestibulum egestas libero mauris, id consequat velit ultricies non.'},
+        {id:`c${i}title`,label:'Título', type:'text', val:'Punto clave de enerBit'},
+        {id:`c${i}body`, label:'Texto',  type:'text', val:'Describe en 1-2 oraciones este punto de valor para la audiencia.'},
       ]),
     ],
     css:`
@@ -637,12 +785,12 @@ const TEMPLATES = [
 
   // 10. BITER BLANCO
   {
-    id:'biter-blanco', name:'Biter blanco', desc:'Título naranja + biter', group:'Contenido',
+    id:'biter-blanco', name:'Biter fondo blanco', desc:'Título naranja + biter', group:'Simples',
     fileName:'biter-blanco-enerbit.pptx',
     fields:[
       {section:'Contenido'},
       {id:'title',label:'Título (naranja)', type:'text',     val:'Título'},
-      {id:'body', label:'Texto',            type:'textarea', val:'Nullam dignissim ut nibh eu ornare. Curabitur libero enim, ultricies vitae pellentesque vitae.'},
+      {id:'body', label:'Texto',            type:'textarea', val:'Más de 50.000 usuarios ya gestionan su energía con enerBit en 96 municipios de Colombia.'},
       {section:'Imagen'},
       {id:'biter',label:'Biter',            type:'image-pick',    val:'biter_hombre_thumbsup.png'},
     ],
@@ -652,7 +800,7 @@ const TEMPLATES = [
       .s-content{position:absolute;left:64px;top:0;bottom:0;width:360px;display:flex;flex-direction:column;justify-content:center;gap:16px}
       .s-title{font-size:44px;font-weight:700;color:#FF7C02;line-height:1.1}
       .s-body{font-size:13px;color:#533583;line-height:1.65}
-      .s-biter{position:absolute;right:140px;top:55%;transform:translateY(-50%);height:95%;object-fit:contain}
+      .s-biter{position:absolute;right:60px;top:55%;transform:translateY(-50%);height:95%;object-fit:contain}
     `,
     render:(d)=>`
       <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
@@ -664,40 +812,6 @@ const TEMPLATES = [
     `,
   },
 
-  // 11. LISTA BARRAS
-  {
-    id:'lista-barras', name:'Lista con barras', desc:'Título grande + 5 ítems', group:'Contenido',
-    fileName:'lista-barras-enerbit.pptx',
-    fields:[
-      {section:'Columna izquierda'},
-      {id:'title',label:'Título', type:'textarea', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
-      {id:'body', label:'Texto',  type:'textarea', val:'Nulla vel erat non magna bibendum bibendum. Vestibulum mattis lacus a molestie auctor.'},
-      ...[1,2,3,4,5].flatMap(i=>[
-        {section:`Ítem ${i}`},
-        {id:`i${i}`,label:'Texto', type:'text', val:'Suspendisse potenti. Vestibulum egestas libero mauris, id consequat velit.'},
-      ]),
-    ],
-    css:`
-      #slide-container{background:#fff;display:flex;align-items:center;padding:64px;gap:56px}
-      .s-left{width:320px;flex-shrink:0;display:flex;flex-direction:column;gap:16px}
-      .s-main-title{font-size:32px;font-weight:700;color:#533583;line-height:1.15;white-space:pre-line}
-      .s-main-body{font-size:11px;color:#666;line-height:1.7}
-      .s-right{flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px}
-      .s-item{display:flex;align-items:flex-start;gap:14px}
-      .s-bar{width:4px;min-height:36px;background:#533583;border-radius:2px;flex-shrink:0;margin-top:2px}
-      .s-item-text{font-size:12px;color:#533583;line-height:1.6}
-    `,
-    render:(d)=>`
-      <div class="s-left">
-        <h2 class="s-main-title" id="eb-title">${esc(d.title)}</h2>
-        <p class="s-main-body" id="eb-body">${esc(d.body)}</p>
-      </div>
-      <div class="s-right">
-        ${[1,2,3,4,5].map(i=>`<div class="s-item"><div class="s-bar"></div><p class="s-item-text" id="eb-i${i}">${esc(d['i'+i])}</p></div>`).join('')}
-      </div>
-    `,
-  },
-
   // 12. MÉTRICAS MIXTO
   {
     id:'metricas-mixto', name:'Métricas mixto', desc:'Mockup + métricas + comparación', group:'Contenido',
@@ -705,7 +819,7 @@ const TEMPLATES = [
     fields:[
       {section:'Izquierda'},
       {id:'title',label:'Título', type:'text',     val:'Título'},
-      {id:'body', label:'Texto',  type:'textarea', val:'Nullam dignissim ut nibh eu ornare. Curabitur libero enim.'},
+      {id:'body', label:'Texto',  type:'textarea', val:'enerBit en números: resultados medibles desde el primer mes.'},
       {section:'Métrica 1'},
       {id:'m1num', label:'Número',      type:'text', val:'22 min'},
       {id:'m1desc',label:'Descripción', type:'text', val:'Tiempo promedio en el proceso completo de instalación.'},
@@ -713,7 +827,7 @@ const TEMPLATES = [
       {id:'m2num', label:'Número',      type:'text', val:'2×'},
       {id:'m2desc',label:'Descripción', type:'text', val:'Aumento de productividad en 2 años de operación.'},
       {section:'Comparación (naranja)'},
-      {id:'clabel',label:'Etiqueta',     type:'text', val:'Titulo'},
+      {id:'clabel',label:'Etiqueta',     type:'text', val:'Crecimiento'},
       {id:'cy1',   label:'Año 1',        type:'text', val:'2023'},
       {id:'cn1',   label:'Número año 1', type:'text', val:'12'},
       {id:'cy2',   label:'Año 2',        type:'text', val:'2026'},
@@ -770,8 +884,8 @@ const TEMPLATES = [
     fileName:'ipad-enerbit.pptx',
     fields:[
       {section:'Contenido'},
-      {id:'title',label:'Título', type:'textarea', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
-      {id:'body', label:'Texto',  type:'textarea', val:'Nulla vel erat non magna bibendum bibendum. Vestibulum mattis lacus a molestie auctor. Morbi at ex hendrerit.'},
+      {id:'title',label:'Título', type:'textarea', val:'Plataforma de gestión energética'},
+      {id:'body', label:'Texto',  type:'textarea', val:'La plataforma de enerBit te da visibilidad total: consumo, facturas y trámites desde un solo lugar.'},
     ],
     css:`
       #slide-container{background:#fff}
@@ -793,12 +907,12 @@ const TEMPLATES = [
 
   // 14. SIMPLE BLANCO
   {
-    id:'simple-blanco', name:'Simple blanco', desc:'Texto centrado, fondo blanco', group:'Transición',
+    id:'simple-blanco', name:'Simple blanco', desc:'Texto centrado, fondo blanco', group:'Simples',
     fileName:'simple-blanco-enerbit.pptx',
     fields:[
       {section:'Contenido'},
-      {id:'title',label:'Título', type:'text',     val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
-      {id:'body', label:'Texto',  type:'textarea', val:'Nulla vel erat non magna bibendum bibendum. Vestibulum mattis lacus a molestie auctor.'},
+      {id:'title',label:'Título', type:'text',     val:'¿En qué ciudades, regiones o países opera actualmente su empresa?'},
+      {id:'body', label:'Texto',  type:'textarea', val:'enerBit opera exclusivamente en Colombia, con presencia en 96 municipios distribuidos en 17 departamentos: Antioquia, Atlántico, Bogotá D.C., Bolívar, Caldas, Cesar, Córdoba, Cundinamarca, Huila, La Guajira, Magdalena, Quindío, Risaralda, Santander, Sucre, Tolima y Valle del Cauca.'},
     ],
     css:`
       #slide-container{background:#fff;display:flex;flex-direction:column;justify-content:center;padding:80px;gap:16px}
@@ -815,12 +929,12 @@ const TEMPLATES = [
 
   // 15. SIMPLE MORADO
   {
-    id:'simple-morado', name:'Simple morado', desc:'Texto centrado, fondo morado', group:'Transición',
+    id:'simple-morado', name:'Simple morado', desc:'Texto centrado, fondo morado', group:'Simples',
     fileName:'simple-morado-enerbit.pptx',
     fields:[
       {section:'Contenido'},
-      {id:'title',label:'Título', type:'text',     val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
-      {id:'body', label:'Texto',  type:'textarea', val:'Nulla vel erat non magna bibendum bibendum. Vestibulum mattis lacus a molestie auctor.'},
+      {id:'title',label:'Título', type:'text',     val:'En enerBit lo imposible\nlo volvemos posible'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Somos una empresa de energía digital respaldada por Celsia, la empresa de energía de Grupo Argos. Transformamos la forma en que gestionas tu energía.'},
     ],
     css:`
       #slide-container{background:#533583;display:flex;flex-direction:column;justify-content:center;padding:80px;gap:16px}
@@ -836,6 +950,28 @@ const TEMPLATES = [
     `,
   },
 
+
+  // SIMPLE MORADO · FONDO DEGRADADO
+  {
+    id:'simple-morado-fondo', name:'Simple morado · Fondo', desc:'Texto centrado, fondo morado degradado', group:'Simples',
+    fileName:'simple-morado-fondo-enerbit.pptx',
+    fields:[
+      {section:'Contenido'},
+      {id:'title',label:'Título', type:'text',     val:'En enerBit lo imposible\nlo volvemos posible'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Somos una empresa de energía digital respaldada por Celsia, la empresa de energía de Grupo Argos. Transformamos la forma en que gestionas tu energía.'},
+    ],
+    css:`
+      #slide-container{background:url('${BGS}bg-morado-morado.jpg') center/cover no-repeat;display:flex;flex-direction:column;justify-content:center;padding:80px;gap:16px}
+      .s-logo{position:absolute;top:28px;right:36px;width:90px}
+      .s-title{font-size:36px;font-weight:700;color:#fff;line-height:1.15;max-width:600px;white-space:pre-line}
+      .s-body{font-size:14px;color:rgba(255,255,255,.75);line-height:1.7;max-width:560px}
+    `,
+    render:(d)=>`
+      <img class="s-logo" src="${LOGO_WHITE}" crossorigin="anonymous">
+      <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
+      <p class="s-body" id="eb-body">${esc(d.body)}</p>
+    `,
+  },
 
   // ── CON FONDO DEGRADADO ────────────────────────────────────────────────────
 
@@ -884,10 +1020,10 @@ const TEMPLATES = [
     fileName:'biter-fondo-enerbit.pptx',
     fields:[
       {section:'Contenido'},
-      {id:'title',label:'Título', type:'textarea', val:'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'},
-      {id:'body', label:'Texto',  type:'textarea', val:'Nulla vel erat non magna bibendum bibendum. Vestibulum mattis lacus a molestie auctor. Morbi at ex hendrerit, vulputate mi non, mollis nibh. Donec elit arcu, iaculis non urna eu.'},
+      {id:'title',label:'Título', type:'textarea', val:'Energía que puedes ver, entender y controlar'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Con enerBit tus clientes tienen control total de su energía desde el día 1. Sin filas, sin llamadas, sin complicaciones.'},
       {section:'Imagen'},
-      {id:'biter',label:'Biter', type:'image-pick', val:'biter_mujer_thumbsup.png'},
+      {id:'biter', label:'Imagen', type:'any-pick', val:'biter_mujer_thumbsup.png', mockupEndsWith:'4'},
     ],
     css:`
       #slide-container{background:url('${BGS}bg-naranja-morado%20amarillo-blanco.jpg') center/cover no-repeat}
@@ -895,7 +1031,7 @@ const TEMPLATES = [
       .s-content{position:absolute;left:80px;top:0;bottom:0;width:420px;display:flex;flex-direction:column;justify-content:center;gap:20px}
       .s-title{font-size:32px;font-weight:700;color:#533583;line-height:1.2;white-space:pre-line}
       .s-body{font-size:13px;color:#533583;line-height:1.65}
-      .s-biter{position:absolute;right:0;top:0;bottom:0;height:100%;object-fit:contain;object-position:right bottom}
+      .s-biter{position:absolute;right:20px;top:0;bottom:0;height:100%;object-fit:contain;object-position:right bottom}
     `,
     render:(d)=>`
       <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
@@ -903,7 +1039,7 @@ const TEMPLATES = [
         <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
         <p class="s-body" id="eb-body">${esc(d.body)}</p>
       </div>
-      <img id="eb-biter" class="s-biter" src="${IMGS}${d.biter}" crossorigin="anonymous">
+      <img id="eb-biter" class="s-biter" src="${d.biter&&d.biter.startsWith('mockups/') ? CDN+'/'+d.biter : IMGS+d.biter}" crossorigin="anonymous">
     `,
   },
 
@@ -914,7 +1050,7 @@ const TEMPLATES = [
     fields:[
       {section:'Contenido'},
       {id:'title',label:'Título', type:'text',     val:'Título'},
-      {id:'body', label:'Texto',  type:'textarea', val:'Nullam dignissim ut nibh eu ornare. Curabitur libero enim, ultricies vitae pellentesque vitae, tristique vel arcu.'},
+      {id:'body', label:'Texto',  type:'textarea', val:'La plataforma de gestión energética más moderna de Colombia. Datos en tiempo real, soporte 24/7.'},
       {section:'Métrica 1 (izquierda)'},
       {id:'m1num', label:'Número',      type:'text', val:'+44.000'},
       {id:'m1desc',label:'Descripción', type:'text', val:'Clientes en toda Colombia'},
@@ -964,7 +1100,7 @@ const TEMPLATES = [
     fields:[
       {section:'Contenido'},
       {id:'title',label:'Título', type:'text',     val:'Título'},
-      {id:'body', label:'Texto',  type:'textarea', val:'Nullam dignissim ut nibh eu ornare. Curabitur libero enim, ultricies vitae pellentesque vitae, tristique vel arcu. Praesent quis nisl efficitur mi egestas blandit.'},
+      {id:'body', label:'Texto',  type:'textarea', val:'enerBit transforma la energía en una experiencia digital. 50.000 usuarios, 96 municipios, 100% app.'},
       {section:'Métrica 1 (izquierda)'},
       {id:'m1num', label:'Número',      type:'text', val:'+44.000'},
       {id:'m1desc',label:'Descripción', type:'text', val:'Clientes en toda Colombia'},
@@ -1014,27 +1150,24 @@ const TEMPLATES = [
     id:'biter-grande-fondo', name:'Biter grande · Fondo', desc:'Título blanco grande + biter derecha', group:'Con fondo degradado',
     fileName:'biter-grande-fondo-enerbit.pptx',
     fields:[
-      {section:'Contenido'},
-      {id:'title',label:'Título (blanco, grande)', type:'textarea', val:'Lorem ipsum dolor\nsit amet, consectetur\nadipiscing elit.'},
-      {id:'body', label:'Texto (morado)',           type:'textarea', val:'Nulla vel erat non magna bibendum bibendum. Vestibulum mattis lacus a molestie auctor. Morbi at ex hendrerit, vulputate mi non, mollis nibh. Donec elit arcu, iaculis non urna eu, molestie tempus quam.'},
+      {section:'Títulos'},
+      {id:'title',label:'Título (blanco, grande)', type:'textarea', val:'La energía\nque puedes\nver y controlar'},
       {section:'Imagen'},
-      {id:'biter',label:'Biter', type:'image-pick', val:'biter_mujer_thumbsup.png'},
+      {id:'biter', label:'Imagen', type:'mockup-pick', val:'Consumos2.png', mockupEndsWith:'2'},
     ],
     css:`
       #slide-container{background:url('${BGS}bg-blanco-morado.jpg') center/cover no-repeat}
       .s-logo{position:absolute;top:24px;right:32px;width:90px}
-      .s-content{position:absolute;left:80px;top:0;bottom:0;width:46%;display:flex;flex-direction:column;justify-content:flex-start;padding-top:80px;gap:22px}
-      .s-title{font-size:38px;font-weight:700;color:#533583;line-height:1.15;white-space:pre-line}
-      .s-body{font-size:13px;color:#533583;line-height:1.65}
-      .s-biter{position:absolute;right:0;top:0;bottom:0;height:100%;object-fit:contain;object-position:right center}
+      .s-content{position:absolute;left:0;right:0;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;text-align:left;padding:40px 420px 120px 60px}
+      .s-title{font-size:42px;font-weight:700;color:#533583;line-height:1.15;white-space:pre-line}
+      .s-biter{position:absolute;right:-10px;top:50%;transform:translateY(-50%);height:90%;object-fit:contain}
     `,
     render:(d)=>`
       <img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">
       <div class="s-content">
         <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
-        <p class="s-body" id="eb-body">${esc(d.body)}</p>
       </div>
-      <img id="eb-biter" class="s-biter" src="${IMGS}${d.biter}" crossorigin="anonymous">
+      <img id="eb-biter" class="s-biter" src="${CDN}/mockups/${d.biter}" crossorigin="anonymous">
     `,
   },
 
@@ -1044,8 +1177,8 @@ const TEMPLATES = [
     fileName:'ipad-card-fondo-enerbit.pptx',
     fields:[
       {section:'Contenido'},
-      {id:'title',label:'Título', type:'text',     val:'Lorem ipsum dolor'},
-      {id:'body', label:'Texto',  type:'textarea', val:'Donec elit arcu, iaculis non urna eu, molestie tempus quam. Ut tempor efficitur pharetra. Donec lacinia nisl diam, eget lobortis elit vulputate eget.'},
+      {id:'title',label:'Título', type:'text',     val:'Energía inteligente para tu proyecto'},
+      {id:'body', label:'Texto',  type:'textarea', val:'Con enerBit los usuarios tienen visibilidad total desde el primer día. Sin filas, sin llamadas, sin complicaciones.'},
     ],
     css:`
       #slide-container{background:url('${BGS}bg-naranja-amarillo.jpg') center/cover no-repeat}
@@ -1071,10 +1204,10 @@ const TEMPLATES = [
     fileName:'biter-card-fondo-enerbit.pptx',
     fields:[
       {section:'Contenido'},
-      {id:'title',label:'Título', type:'text',     val:'Lorem ipsum dolor'},
+      {id:'title',label:'Título', type:'text',     val:'Con energía inteligente desde el día 1'},
       {id:'body', label:'Texto',  type:'textarea', val:'Donec elit arcu, iaculis non urna eu, molestie tempus quam. Ut tempor efficitur pharetra. Donec lacinia nisl diam, eget lobortis elit vulputate eget.'},
       {section:'Imagen'},
-      {id:'biter',label:'Biter', type:'image-pick', val:'biter_mujer_thumbsup.png'},
+      {id:'biter', label:'Imagen', type:'any-pick', val:'biter_mujer_thumbsup.png', mockupEndsWith:'4'},
     ],
     css:`
       #slide-container{background:url('${BGS}bg-morado-morado%20claro.jpg') center/cover no-repeat}
@@ -1090,7 +1223,76 @@ const TEMPLATES = [
         <h2 class="s-title" id="eb-title">${esc(d.title)}</h2>
         <p class="s-body" id="eb-body">${esc(d.body)}</p>
       </div>
-      <img id="eb-biter" class="s-biter" src="${IMGS}${d.biter}" crossorigin="anonymous">
+      <img id="eb-biter" class="s-biter" src="${d.biter&&d.biter.startsWith('mockups/') ? CDN+'/'+d.biter : IMGS+d.biter}" crossorigin="anonymous">
+    `,
+  },
+
+
+  // BENEFICIOS APP
+  {
+    id:'beneficios-app', name:'Beneficios App', desc:'6 beneficios + mockup celular', group:'Simples',
+    fields:[
+      {section:'Encabezado'},
+      {id:'heading',label:'Título principal',type:'text',val:'Con enerBit tienes:'},
+      {section:'Beneficio 1'},
+      {id:'f1',label:'Texto',type:'text',val:'Atención 24/7 por WhatsApp, soportado por un equipo humano.'},
+      {section:'Beneficio 2'},
+      {id:'f2',label:'Texto',type:'text',val:'Tarifas competitivas comparadas con las de tu ciudad.'},
+      {section:'Beneficio 3'},
+      {id:'f3',label:'Texto',type:'text',val:'Monitoreo en tiempo real de tu consumo hora a hora desde la App.'},
+      {section:'Beneficio 4'},
+      {id:'f4',label:'Texto',type:'text',val:'Notificaciones inteligentes con alertas personalizadas sobre tus picos de consumo.'},
+      {section:'Beneficio 5'},
+      {id:'f5',label:'Texto',type:'text',val:'Gestión de facturación, consultando y pagando ágil directamente en la App.'},
+      {section:'Beneficio 6'},
+      {id:'f6',label:'Texto',type:'text',val:'Control total con el poder de la energía en tus manos.'},
+    ],
+    css:`
+      #slide-container{background:url('${BGS}bg-naranja-morado%20amarillo-blanco.jpg') center/cover no-repeat;overflow:hidden;padding:0;display:flex;align-items:center}
+      .s-content{width:60%;padding:0 0 0 70px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1}
+      .s-heading{font-size:24px;font-weight:700;color:#533583;line-height:1.2}
+      .s-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 0}
+      .s-feat{display:flex;flex-direction:column;gap:4px}
+      .s-feat:nth-child(odd){padding-right:20px}
+      .s-feat:nth-child(even){padding-left:20px}
+      .s-icon{width:20px;height:20px;fill:#FF7C02;margin-bottom:2px}
+      .s-fpara{font-size:13.5px;color:#533583;line-height:1.5}
+      .s-fpara strong{font-weight:700}
+      .s-logo{position:absolute;top:24px;right:32px;width:90px}
+      .s-phone{position:absolute;right:-60px;top:40px;height:115%;object-fit:contain;object-position:top right}
+    `,
+    render:(d)=>`
+      ${d.logo !== false ? `<img class="s-logo" src="${LOGO_COLOR}" crossorigin="anonymous">` : ''}
+      <div class="s-content">
+      <h2 class="s-heading" id="eb-heading">${esc(d.heading)}</h2>
+      <div class="s-grid">
+        <div class="s-feat">
+          <svg class="s-icon" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          <p class="s-fpara" id="eb-f1">${esc(d.f1)}</p>
+        </div>
+        <div class="s-feat">
+          <svg class="s-icon" viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+          <p class="s-fpara" id="eb-f2">${esc(d.f2)}</p>
+        </div>
+        <div class="s-feat">
+          <svg class="s-icon" viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm10 0h8v8h-8V3zM3 13h8v8H3v-8zm10 0h8v8h-8v-8z"/></svg>
+          <p class="s-fpara" id="eb-f3">${esc(d.f3)}</p>
+        </div>
+        <div class="s-feat">
+          <svg class="s-icon" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+          <p class="s-fpara" id="eb-f4">${esc(d.f4)}</p>
+        </div>
+        <div class="s-feat">
+          <svg class="s-icon" viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
+          <p class="s-fpara" id="eb-f5">${esc(d.f5)}</p>
+        </div>
+        <div class="s-feat">
+          <svg class="s-icon" viewBox="0 0 24 24"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>
+          <p class="s-fpara" id="eb-f6">${esc(d.f6)}</p>
+        </div>
+      </div>
+      </div>
+      <img class="s-phone" src="${CDN}/mockups/Consumos4.png" crossorigin="anonymous">
     `,
   },
 
@@ -1098,7 +1300,9 @@ const TEMPLATES = [
 
 // ── Inject logo toggle into all templates ─────────────────────────────────────
 // biter-grande-fondo logo is hidden by default (bg is light on left, logo goes on dark right)
+const STATIC_IDS = ['cierre-contacto','cierre-redes','preguntas','medidor','mapa','beneficios-app'];
 TEMPLATES.forEach(t => {
+  if (STATIC_IDS.includes(t.id)) return; // sin toggle en slides estáticos
   const showByDefault = t.id !== 'biter-grande-fondo';
   t.fields.unshift(
     {section:'Opciones'},
@@ -1111,9 +1315,25 @@ let repoImages = [
   {name:'biter_mujer_thumbsup.png'},
   {name:'biter_mujer_celular.png'},
   {name:'biter_hombre_thumbsup.png'},
-  {name:'MOCKUP-CELULAR.png'},
   {name:'ipad-b2b.png'},
 ];
+
+let repoMockups = [
+  {name:'Consumos1.png'},
+  {name:'Consumos2.png'},
+  {name:'Consumos3.png'},
+  {name:'Consumos4.png'},
+];
+
+async function loadRepoMockups() {
+  try {
+    const resp = await fetch('https://api.github.com/repos/LauraenerBit2026/tokens-brand-tokens.css/contents/mockups');
+    if (!resp.ok) return;
+    const files = await resp.json();
+    const imgs = files.filter(f => f.type === 'file' && /\.(png|jpg|jpeg|gif|webp)$/i.test(f.name));
+    if (imgs.length > 0) repoMockups = imgs.map(f => ({ name: f.name }));
+  } catch(e) { /* use fallback */ }
+}
 
 async function loadRepoImages() {
   try {
@@ -1138,8 +1358,14 @@ function buildNav() {
     if (!groups[t.group]) groups[t.group] = [];
     groups[t.group].push(t);
   }
+  const GROUP_ORDER = ['Portadas','Simples','Cierres','Estáticas','Contenido','Con fondo degradado'];
+  const sortedGroups = [
+    ...GROUP_ORDER.filter(g => groups[g]),
+    ...Object.keys(groups).filter(g => !GROUP_ORDER.includes(g))
+  ];
   let html = '';
-  for (const [g, tpls] of Object.entries(groups)) {
+  for (const g of sortedGroups) {
+    const tpls = groups[g];
     html += `<p class="nav-group-label">${g}</p>`;
     for (const t of tpls) {
       html += `<button class="nav-btn" data-id="${t.id}"><span>${t.name}</span><span class="nav-desc">${t.desc}</span></button>`;
@@ -1179,7 +1405,40 @@ function buildPanel(tpl) {
               <span>${img.name.replace(/\.[^.]+$/,'').replace(/_/g,' ')}</span>
             </div>`).join('')
         : `<p class="img-loading">Cargando imágenes…</p>`;
-      html += `<div class="field"><label>${f.label}</label><div class="img-picker">${thumbs}</div></div>`;
+      html += `<div class="field"><label>${f.label}</label><p class="img-hint">Elige la imagen para el slide</p><div class="img-picker">${thumbs}</div></div>`;
+    } else if (f.type === 'mockup-pick') {
+      let list = f.options ? f.options.map(name => ({name})) : repoMockups;
+      if (f.mockupEndsWith) list = list.filter(img => img.name.replace(/\.[^.]+$/,'').endsWith(f.mockupEndsWith));
+      const thumbs = list.length
+        ? list.map(img => `
+            <div class="img-thumb${val===img.name?' selected':''}" data-fid="${f.id}" data-val="${img.name}" data-folder="mockups">
+              <img src="${CDN}/mockups/${img.name}" alt="${img.name}" crossorigin="anonymous">
+              <span>${img.name.replace(/\.[^.]+$/,'').replace(/_/g,' ')}</span>
+            </div>`).join('')
+        : `<p class="img-loading">Cargando mockups…</p>`;
+      html += `<div class="field"><label>${f.label}</label><p class="img-hint">Elige la imagen para el slide</p><div class="img-picker">${thumbs}</div></div>`;
+    } else if (f.type === 'any-pick') {
+      // Unified picker: biters + mockups, value = "mockups/filename" or "filename"
+      const biterThumbs = repoImages.map(img => `
+          <div class="img-thumb${val===img.name?' selected':''}" data-fid="${f.id}" data-val="${img.name}">
+            <img src="${IMGS}${img.name}" alt="${img.name}" crossorigin="anonymous">
+            <span>${img.name.replace(/\.[^.]+$/,'').replace(/_/g,' ')}</span>
+          </div>`).join('');
+      const mockupList = f.mockupEndsWith
+        ? repoMockups.filter(img => img.name.replace(/\.[^.]+$/,'').endsWith(f.mockupEndsWith))
+        : repoMockups;
+      const mockupThumbs = mockupList.map(img => `
+          <div class="img-thumb${val==='mockups/'+img.name?' selected':''}" data-fid="${f.id}" data-val="mockups/${img.name}" data-folder="mockups">
+            <img src="${CDN}/mockups/${img.name}" alt="${img.name}" crossorigin="anonymous">
+            <span>${img.name.replace(/\.[^.]+$/,'').replace(/_/g,' ')}</span>
+          </div>`).join('');
+      html += `<div class="field"><label>${f.label}</label>
+        <p class="img-hint">Elige la imagen para el slide</p>
+        <p class="picker-sub-label">Personas</p>
+        <div class="img-picker">${biterThumbs || '<p class="img-loading">Cargando…</p>'}</div>
+        <p class="picker-sub-label" style="margin-top:10px">Mockups de app</p>
+        <div class="img-picker">${mockupThumbs || '<p class="img-loading">Cargando…</p>'}</div>
+      </div>`;
     }
   }
   if (inSection) html += '</div>';
@@ -1193,11 +1452,24 @@ function buildPanel(tpl) {
 function renderSlide(tpl) {
   document.getElementById('tpl-css').textContent = tpl.css;
   document.getElementById('slide-container').innerHTML = tpl.render(currentValues);
-  // Apply logo visibility (toggle default may be false for some templates)
+  // Apply logo visibility
   if (currentValues['logo'] === false) {
     const logoEl = document.getElementById('slide-container').querySelector('.s-logo');
     if (logoEl) logoEl.style.display = 'none';
   }
+  // If biter/mockup fails, fall back to first available image from repo
+  function fallbackImg(img) {
+    const isMockup = img.classList.contains('s-mockup') || img.classList.contains('s-phone');
+    const fallbacks = isMockup ? repoMockups : repoImages;
+    if (fallbacks.length > 0) {
+      img.onerror = null; // prevent loop
+      img.src = isMockup ? `${CDN}/mockups/${fallbacks[0].name}` : IMGS + fallbacks[0].name;
+    }
+  }
+  document.getElementById('slide-container').querySelectorAll('img.s-biter, img.s-mockup, img.s-phone').forEach(img => {
+    img.onerror = function() { fallbackImg(this); };
+    if (img.complete && img.naturalHeight === 0) fallbackImg(img);
+  });
 }
 
 // ── Update single field in preview ───────────────────────────────────────────
@@ -1209,7 +1481,16 @@ function updateField(fieldId, val) {
   }
   const el = document.getElementById('eb-' + fieldId);
   if (!el) return;
-  if (el.tagName === 'IMG') el.src = IMGS + val;
+  if (el.tagName === 'IMG') {
+    const f = currentTpl.fields.find(f => f.id === fieldId);
+    if (f && f.type === 'mockup-pick') {
+      el.src = `${CDN}/mockups/${val}`;
+    } else if (f && f.type === 'any-pick') {
+      el.src = val.startsWith('mockups/') ? `${CDN}/${val}` : IMGS + val;
+    } else {
+      el.src = IMGS + val;
+    }
+  }
   else el.textContent = val;
 }
 
@@ -1239,7 +1520,7 @@ function scaleSlide() {
   const area   = document.getElementById('preview-area');
   const scaler = document.getElementById('slide-scaler');
   const s = Math.min((area.clientWidth - 48) / 960, (area.clientHeight - 48) / 540, 1);
-  scaler.style.transform = `scale(${s})`;
+  scaler.style.transform = `scale(${s}) translateZ(0)`;
 }
 
 // ── Deck: add current template ────────────────────────────────────────────────
@@ -1429,7 +1710,8 @@ document.getElementById('deck-clear-btn').addEventListener('click', () => { deck
 buildNav();
 scaleSlide();
 window.addEventListener('resize', scaleSlide);
-loadRepoImages(); // fetch image list from GitHub (non-blocking)
+loadRepoImages();   // fetch biter images from GitHub (non-blocking)
+loadRepoMockups();  // fetch mockup images from GitHub (non-blocking)
 </script>
 </body>
 </html>
